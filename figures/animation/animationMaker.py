@@ -1,0 +1,23 @@
+import os
+from PIL import Image
+
+def create_gif(png_folder, gif_file, delay, frame_format):
+    # Get the list of PNG files in the folder and sort them based on frame number
+    png_files = sorted([file for file in os.listdir(png_folder) if file.endswith(frame_format)], key=lambda x: int(x.split('_')[-1].split('.')[0]))
+
+    images = []
+    for png_file in png_files:
+        image_path = os.path.join(png_folder, png_file)
+        image = Image.open(image_path)
+        images.append(image)
+
+    # Save as an animated GIF
+    images[0].save(gif_file, save_all=True, append_images=images[1:], optimize=False, duration=delay, loop=0)
+
+
+png_folder = 'figures/animation'
+frame_format = '.png'
+gif_file = 'figures/animation/animation.gif'
+delay = 100  # Delay between frames in milliseconds
+
+create_gif(png_folder, gif_file, delay, frame_format)

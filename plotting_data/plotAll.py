@@ -1,0 +1,9 @@
+import plotAdaptiveTimings
+import plotAllFrames
+import plotCompleteTrajectories
+import plotComputationTimes
+import plotControls
+import plotMap
+import plotScaling
+import plotSparsities
+import plotSummary
