@@ -3,7 +3,7 @@
 
 #include "buildingBlocks.hpp"
 #include "bookkeeper.hpp"
-#include "IpTNLP.hpp"
+#include <IpTNLP.hpp>
 #include <cassert>
 #include <eigen3/Eigen/Dense>
 #include <iostream>

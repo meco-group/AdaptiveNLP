@@ -1,1 +1,4 @@
 src/obj/*
+!src/obj/.gitignore
+figures/*.png
+figures/*.pdf

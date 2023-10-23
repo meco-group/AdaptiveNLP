@@ -3,9 +3,6 @@
 #include <limits>
 #include <cmath>
 #include <chrono>
-#ifndef NDEBUG
-	#include "../include/plotter.hpp"
-#endif
 
 using namespace std;
 using namespace Ipopt;
