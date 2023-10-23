@@ -507,38 +507,40 @@ std::vector<std::vector<double>> AdaptiveCorridorHelper::performCasadiLoop(
     DM uu_init = DM(uu.size());
 
     // objective
-    MX obj = blocks.Phi_0_({xx(Slice(),0), 0})[0] + 
-             blocks.Phi_f_({xx(Slice(),N), 0})[0];
+    MX obj = blocks.eval_Phi_0({xx(Slice(),0), 0})[0] + 
+             blocks.eval_Phi_f({xx(Slice(),N), 0})[0];
     for (int k = 0; k < N; k++){
-        obj += blocks.phi_({xx(Slice(), k), uu(Slice(), k), dt, 0})[0];
+        obj += blocks.eval_phi({xx(Slice(), k), uu(Slice(), k), dt, 0})[0];
     }
     opti.minimize(obj);
 
     // constraints
-    opti.subject_to((blocks.g0_lb_ <= blocks.g0_({xx(Slice(),0), p_0})[0]) <= 
-                    blocks.g0_ub_);
-    opti.subject_to((blocks.gT_lb_ <= blocks.gT_({xx(Slice(),N), p_T})[0]) <= 
-                    blocks.gT_ub_);
+    opti.subject_to((blocks.get_g0_lb() <= 
+                    blocks.eval_g0({xx(Slice(),0), p_0})[0]) <= 
+                    blocks.get_g0_ub());
+    opti.subject_to((blocks.get_gT_lb() <= 
+                    blocks.eval_gT({xx(Slice(),N), p_T})[0]) <= 
+                    blocks.get_gT_ub());
     for (int k = 0; k < N; k++){
-        opti.subject_to((blocks.g_fixed_lb_ <= 
-            blocks.g_fixed_({xx(Slice(), k), uu(Slice(), k), 0})[0]) <= 
-            blocks.g_fixed_ub_);
-        opti.subject_to((blocks.g_extra_lb_[0] <= 
-            blocks.g_extra_[0]({xx(Slice(), k), uu(Slice(), k), 
-                                p_corridors(Slice(), k)})[0]) <= 
-            blocks.g_extra_ub_[0]);
+        opti.subject_to((blocks.get_g_fixed_lb() <= 
+            blocks.eval_g_fixed({xx(Slice(), k), uu(Slice(), k), 0})[0]) <= 
+            blocks.get_g_fixed_ub());
+        opti.subject_to((blocks.get_g_extra_lb(0) <= 
+            blocks.eval_g_extra({xx(Slice(), k), uu(Slice(), k), 
+                                p_corridors(Slice(), k)}, 0)[0]) <= 
+            blocks.get_g_extra_ub(0));
         
         for (int i = 0; i < obstacle_x.size(); i++){
-            opti.subject_to((blocks.g_extra_lb_[1] <= 
-                blocks.g_extra_[1]({xx(Slice(), k), uu(Slice(), k), 
-                                    p_obs(Slice(), i)})[0]) <= 
-                blocks.g_extra_ub_[1]);
+            opti.subject_to((blocks.get_g_extra_lb(1) <= 
+                blocks.eval_g_extra({xx(Slice(), k), uu(Slice(), k), 
+                                    p_obs(Slice(), i)}, 1)[0]) <= 
+                blocks.get_g_extra_ub(1));
         }
         for (int i = 0; i < low_speed_pos_x.size(); i++){
-            opti.subject_to((blocks.g_extra_lb_[2] <= 
-                blocks.g_extra_[2]({xx(Slice(), k), uu(Slice(), k), 
-                                    p_low(Slice(), i)})[0]) <= 
-                blocks.g_extra_ub_[2]);
+            opti.subject_to((blocks.get_g_extra_lb(2) <= 
+                blocks.eval_g_extra({xx(Slice(), k), uu(Slice(), k), 
+                                    p_low(Slice(), i)}, 2)[0]) <= 
+                blocks.get_g_extra_ub(2));
         }
     }
 
@@ -547,27 +549,25 @@ std::vector<std::vector<double>> AdaptiveCorridorHelper::performCasadiLoop(
         if (nb_steps == 2){
             MX local_xx = horzcat(xx(Slice(), j), xx(Slice(), j+1));
             opti.subject_to(
-                blocks.g_disc_
-                    [blocks.nb_steps_mapping_[nb_steps].value()]
-                    ({local_xx, uu(Slice(), j), dt, T})[0] == 0);
+                blocks.eval_g_disc
+                    ({local_xx, uu(Slice(), j), dt, T}, nb_steps)[0] == 0);
         } else {
             MX local_xx = horzcat(xx(Slice(), 2*j), xx(Slice(), 2*j+1),
                                   xx(Slice(), 2*j+2));
             MX local_uu = horzcat(uu(Slice(), 2*j), uu(Slice(), 2*j+1));
             opti.subject_to(
-                blocks.g_disc_
-                    [blocks.nb_steps_mapping_[nb_steps].value()]
+                blocks.eval_g_disc
                     ({local_xx, local_uu, 
-                        std::vector<double>{dt, dt}, T})[0] == 0);
+                        std::vector<double>{dt, dt}, T}, nb_steps)[0] == 0);
         }
     }
 
     // initial guess
     for (int i = 0; i < N+1; i++){ 
-        xx_init(Slice(), i) = blocks.x_init_({DM(dt*i)})[0];
+        xx_init(Slice(), i) = blocks.eval_x_init({DM(dt*i)})[0];
     }
     for (int i = 0; i < N; i++){ 
-        uu_init(Slice(), i) = blocks.u_init_({DM(dt*i)})[0];
+        uu_init(Slice(), i) = blocks.eval_u_init({DM(dt*i)})[0];
     }
 
     // set parameters
@@ -795,50 +795,51 @@ std::vector<std::vector<double>> AdaptiveCorridorHelper::performCasadiLoopReform
         MX uu = opti.variable(nu, N);
 
         // objective
-        MX obj = blocks.Phi_0_({xx(Slice(),0), 0})[0] + 
-                blocks.Phi_f_({xx(Slice(),N), 0})[0];
+        MX obj = blocks.eval_Phi_0({xx(Slice(),0), 0})[0] + 
+                blocks.eval_Phi_f({xx(Slice(),N), 0})[0];
         for (int k = 0; k < N; k++){
-            obj += blocks.phi_({xx(Slice(), k), uu(Slice(), k), dt, 0})[0];
+            obj += blocks.eval_phi({xx(Slice(), k), uu(Slice(), k), dt, 0})[0];
         }
         opti.minimize(obj);
 
         // constraints
-        opti.subject_to((blocks.g0_lb_ <= 
-                        blocks.g0_({xx(Slice(),0), x0})[0]) <= blocks.g0_ub_);
-        constraint_counter += blocks.nb_g0_;
+        opti.subject_to((blocks.get_g0_lb() <= 
+                        blocks.eval_g0({xx(Slice(),0), x0})[0]) <= 
+                        blocks.get_g0_ub());
+        constraint_counter += blocks.get_nb_g0();
         for (int k = 0; k < N; k++){
-            opti.subject_to((blocks.g_fixed_lb_ <= 
-                blocks.g_fixed_({xx(Slice(), k), uu(Slice(), k), 0})[0]) <= 
-                blocks.g_fixed_ub_);
-            constraint_counter += blocks.nb_g_fixed_;
+            opti.subject_to((blocks.get_g_fixed_lb() <= 
+                blocks.eval_g_fixed({xx(Slice(), k), uu(Slice(), k), 0})[0]) <= 
+                blocks.get_g_fixed_ub());
+            constraint_counter += blocks.get_nb_g_fixed();
 
             // corridor constraint
             if (iteration > 0){
                 if (formatted_xx[0][k] < corridor_2[1] - corridor_margin){
                     if (formatted_xx[0][k] < corridor_1[1] - corridor_margin){
-                        opti.subject_to((blocks.g_extra_lb_[0] <= 
-                            blocks.g_extra_[0]({xx(Slice(), k), uu(Slice(), k), 
-                                        corridor_1})[0]) <= 
-                            blocks.g_extra_ub_[0]);
+                        opti.subject_to((blocks.get_g_extra_lb(0) <= 
+                            blocks.eval_g_extra({xx(Slice(), k), uu(Slice(), k), 
+                                        corridor_1}, 0)[0]) <= 
+                            blocks.get_g_extra_ub(0));
                         final_point_corridor = corridor_1;
-                        constraint_counter += blocks.nb_g_extra_[0];
+                        constraint_counter += blocks.get_nb_g_extra(0);
                     } else {
-                        opti.subject_to((blocks.g_extra_lb_[0] <= 
-                            blocks.g_extra_[0]({xx(Slice(), k), uu(Slice(), k), 
-                                        corridor_2})[0]) <= 
-                            blocks.g_extra_ub_[0]);
-                        constraint_counter += blocks.nb_g_extra_[0];
+                        opti.subject_to((blocks.get_g_extra_lb(0) <= 
+                            blocks.eval_g_extra({xx(Slice(), k), uu(Slice(), k), 
+                                        corridor_2}, 0)[0]) <= 
+                            blocks.get_g_extra_ub(0));
+                        constraint_counter += blocks.get_nb_g_extra(0);
                         final_point_corridor = corridor_2;
                     }
                 } else {
                     final_point_corridor = {-1000, 1000, -1000, 1000};
                 }
             } else {
-                opti.subject_to((blocks.g_extra_lb_[0] <= 
-                    blocks.g_extra_[0]({xx(Slice(), k), uu(Slice(), k), 
-                                        corridor_1})[0]) <= 
-                    blocks.g_extra_ub_[0]);
-                constraint_counter += blocks.nb_g_extra_[0];
+                opti.subject_to((blocks.get_g_extra_lb(0) <= 
+                    blocks.eval_g_extra({xx(Slice(), k), uu(Slice(), k), 
+                                        corridor_1}, 0)[0]) <= 
+                    blocks.get_g_extra_ub(0));
+                constraint_counter += blocks.get_nb_g_extra(0);
             }
             
             // obstacle constraint
@@ -852,11 +853,11 @@ std::vector<std::vector<double>> AdaptiveCorridorHelper::performCasadiLoopReform
                         std::pow(formatted_xx[1][k] - obstacle_y[i], 2) <= 
                             std::pow(obstacle_r[i] + obstacle_margin, 2)){
                         p_obs = {obstacle_x[i], obstacle_y[i], obstacle_r[i]};
-                        opti.subject_to((blocks.g_extra_lb_[1] <= 
-                            blocks.g_extra_[1]({xx(Slice(), k), uu(Slice(), k), 
-                                p_obs})[0]) <= 
-                            blocks.g_extra_ub_[1]);
-                        constraint_counter += blocks.nb_g_extra_[1];
+                        opti.subject_to((blocks.get_g_extra_lb(1) <= 
+                            blocks.eval_g_extra({xx(Slice(), k), uu(Slice(), k), 
+                                p_obs}, 1)[0]) <= 
+                            blocks.get_g_extra_ub(1));
+                        constraint_counter += blocks.get_nb_g_extra(1);
                         v = true;
                     };
                     visible_constraints[iteration][i] = v;
@@ -875,11 +876,11 @@ std::vector<std::vector<double>> AdaptiveCorridorHelper::performCasadiLoopReform
                             std::pow(low_speed_r[i] + low_speed_margin, 2)){
                         p_low = {low_speed_min_, low_speed_r[i], 
                                  low_speed_pos_x[i], low_speed_pos_y[i]};
-                        opti.subject_to((blocks.g_extra_lb_[2] <= 
-                            blocks.g_extra_[2]({xx(Slice(), k), uu(Slice(), k), 
-                                p_low})[0]) <= 
-                            blocks.g_extra_ub_[2]);
-                        constraint_counter += blocks.nb_g_extra_[1];
+                        opti.subject_to((blocks.get_g_extra_lb(2) <= 
+                            blocks.eval_g_extra({xx(Slice(), k), uu(Slice(), k), 
+                                p_low}, 2)[0]) <= 
+                            blocks.get_g_extra_ub(2));
+                        constraint_counter += blocks.get_nb_g_extra(2);
                         v = true;
                     };
                     visible_constraints[iteration][obstacle_x.size() + i] = v;
@@ -887,32 +888,28 @@ std::vector<std::vector<double>> AdaptiveCorridorHelper::performCasadiLoopReform
             }
         }
 
-        opti.subject_to((blocks.gT_lb_ <= 
-                        blocks.gT_({xx(Slice(),N), final_point_corridor})[0]) 
-                        <= blocks.gT_ub_);
-        constraint_counter += blocks.nb_gT_;
+        opti.subject_to((blocks.get_gT_lb() <= 
+                        blocks.eval_gT({xx(Slice(),N), final_point_corridor})[0]) 
+                        <= blocks.get_gT_ub());
+        constraint_counter += blocks.get_nb_gT();
 
         assert (nb_steps == 2 || nb_steps == 3);
         for (int j = 0; j < nb_intervals; j++){
             if (nb_steps == 2){
                 MX local_xx = horzcat(xx(Slice(), j), xx(Slice(), j+1));
                 opti.subject_to(
-                    blocks.g_disc_
-                        [blocks.nb_steps_mapping_[nb_steps].value()]
-                        ({local_xx, uu(Slice(), j), dt, T})[0] == 0);
-                constraint_counter += blocks.nb_g_disc_[
-                    blocks.nb_steps_mapping_[nb_steps].value()];
+                    blocks.eval_g_disc
+                        ({local_xx, uu(Slice(), j), dt, T}, nb_steps)[0] == 0);
+                constraint_counter += blocks.get_nb_g_disc(nb_steps);
             } else {
                 MX local_xx = horzcat(xx(Slice(), 2*j), xx(Slice(), 2*j+1),
                                     xx(Slice(), 2*j+2));
                 MX local_uu = horzcat(uu(Slice(), 2*j), uu(Slice(), 2*j+1));
                 opti.subject_to(
-                    blocks.g_disc_
-                        [blocks.nb_steps_mapping_[nb_steps].value()]
+                    blocks.eval_g_disc
                         ({local_xx, local_uu, 
-                            std::vector<double>{dt, dt}, T})[0] == 0);
-                constraint_counter += blocks.nb_g_disc_[
-                    blocks.nb_steps_mapping_[nb_steps].value()];
+                            std::vector<double>{dt, dt}, T}, nb_steps)[0] == 0);
+                constraint_counter += blocks.get_nb_g_disc(nb_steps);
             }
         }
 
@@ -927,10 +924,12 @@ std::vector<std::vector<double>> AdaptiveCorridorHelper::performCasadiLoopReform
             opti.set_initial(uu(Slice(), N-1), uu_DM(Slice(), N-1));
         } else {
             for (int i = 0; i < N+1; i++){ 
-                opti.set_initial(xx(Slice(), i), blocks.x_init_({DM(dt*i)})[0]);
+                opti.set_initial(xx(Slice(), i), 
+                                 blocks.eval_x_init({DM(dt*i)})[0]);
             }
             for (int i = 0; i < N; i++){ 
-                opti.set_initial(uu(Slice(), i), blocks.u_init_({DM(dt*i)})[0]);
+                opti.set_initial(uu(Slice(), i), 
+                                 blocks.eval_u_init({DM(dt*i)})[0]);
             }
         }
 

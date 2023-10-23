@@ -281,6 +281,157 @@ class BuildingBlocks{
         // get free-time
         bool getFreeTime(){ return free_time_;};
 
+        // Functions to evaluate building blocks
+        //template <typename T>
+        std::vector<MX> eval_Phi_0(std::vector<MX> arg){ return Phi_0_(arg);};
+        //template <typename T>
+        
+        std::vector<MX> eval_Phi_0_J(std::vector<MX> arg){
+            return Phi_0_J_(arg);
+        };
+
+        //template <typename T>
+        std::vector<MX> eval_Phi_0_H(std::vector<MX> arg){
+            return Phi_0_H_(arg);
+        };
+
+        //template <typename T>
+        std::vector<MX> eval_Phi_f(std::vector<MX> arg){ return Phi_f_(arg);};
+        
+        //template <typename T>
+        std::vector<MX> eval_Phi_f_J(std::vector<MX> arg){
+            return Phi_f_J_(arg);
+        };
+
+        //template <typename T>
+        std::vector<MX> eval_Phi_f_H(std::vector<MX> arg){
+            return Phi_f_H_(arg);
+        };
+
+        //template <typename T>
+        std::vector<MX> eval_phi(std::vector<MX> arg){ return phi_(arg);};
+        //template <typename T>
+        std::vector<MX> eval_phi_J(std::vector<MX> arg){ return phi_J_(arg);};
+        //template <typename T>
+        std::vector<MX> eval_phi_H(std::vector<MX> arg){ return phi_H_(arg);};
+        
+        //template <typename T>
+        std::vector<MX> eval_g0(std::vector<MX> arg){ return g0_(arg);};
+        //template <typename T>
+        std::vector<MX> eval_g0_J(std::vector<MX> arg){ return g0_J_(arg);};
+        //template <typename T>
+        std::vector<MX> eval_g0_H(std::vector<MX> arg){ return g0_H_(arg);};
+        
+        //template <typename T>
+        std::vector<MX> eval_gT(std::vector<MX> arg){ return gT_(arg);};
+        //template <typename T>
+        std::vector<MX> eval_gT_J(std::vector<MX> arg){ return gT_J_(arg);};
+        //template <typename T>
+        std::vector<MX> eval_gT_H(std::vector<MX> arg){ return gT_H_(arg);};
+        
+        //template <typename T>
+        std::vector<MX> eval_g_fixed(std::vector<MX> arg){ 
+            return g_fixed_(arg);
+        };
+        //template <typename T>
+        std::vector<MX> eval_g_fixed_J(std::vector<MX> arg){ 
+            return g_fixed_J_(arg);
+        };
+        //template <typename T>
+        std::vector<MX> eval_g_fixed_H(std::vector<MX> arg){ 
+            return g_fixed_H_(arg);
+        };
+        
+        //template <typename T>
+        std::vector<MX> eval_g_disc(std::vector<MX> arg, int n){
+            return g_disc_[nb_steps_mapping_[n].value()](arg);
+        };
+        //template <typename T>
+        std::vector<MX> eval_g_disc_J(std::vector<MX> arg, int n){
+            return g_disc_J_[nb_steps_mapping_[n].value()](arg);
+        };
+        //template <typename T>
+        std::vector<MX> eval_g_disc_H(std::vector<MX> arg, int n){
+            return g_disc_H_[nb_steps_mapping_[n].value()](arg);
+        };
+        
+        //template <typename T>
+        std::vector<MX> eval_g_extra(std::vector<MX> arg, int constraint_ind){
+            return g_extra_[constraint_ind](arg);
+        }
+        //template <typename T>
+        std::vector<MX> eval_g_extra_J(std::vector<MX> arg, 
+                                       int constraint_ind){
+            return g_extra_J_[constraint_ind](arg);
+        }
+        //template <typename T>
+        std::vector<MX> eval_g_extra_H(std::vector<MX> arg, 
+                                       int constraint_ind){
+            return g_extra_H_[constraint_ind](arg);
+        }
+        
+        //template <typename T>
+        std::vector<DM> eval_x_init(std::vector<DM> arg){ return x_init_(arg);};
+        //template <typename T>
+        std::vector<DM> eval_u_init(std::vector<DM> arg){ return u_init_(arg);};
+        double get_t_init(){ return t_init_;};
+
+        // Getters for constraint bounds
+        std::vector<double> get_g0_lb(){
+            std::vector<double> res(nb_g0_);
+            std::copy(g0_lb_.begin(), g0_lb_.end(), res.begin());
+            return res;
+        };
+        std::vector<double> get_g0_ub(){
+            std::vector<double> res(nb_g0_);
+            std::copy(g0_ub_.begin(), g0_ub_.end(), res.begin());
+            return res;
+        };
+        std::vector<double> get_gT_lb(){
+            std::vector<double> res(nb_gT_);
+            std::copy(gT_lb_.begin(), gT_lb_.end(), res.begin());
+            return res;
+        };
+        std::vector<double> get_gT_ub(){
+            std::vector<double> res(nb_gT_);
+            std::copy(gT_ub_.begin(), gT_ub_.end(), res.begin());
+            return res;
+        };
+        std::vector<double> get_g_fixed_lb(){
+            std::vector<double> res(nb_g_fixed_);
+            std::copy(g_fixed_lb_.begin(), g_fixed_lb_.end(), res.begin());
+            return res;
+        };
+        std::vector<double> get_g_fixed_ub(){
+            std::vector<double> res(nb_g_fixed_);
+            std::copy(g_fixed_ub_.begin(), g_fixed_ub_.end(), res.begin());
+            return res;
+        };
+        std::vector<double> get_g_extra_lb(int constraint_ind){
+            std::vector<double> res(nb_g_extra_[constraint_ind]);
+            std::copy(g_extra_lb_[constraint_ind].begin(), 
+                      g_extra_lb_[constraint_ind].end(), res.begin());
+            return res;
+        };
+        std::vector<double> get_g_extra_ub(int constraint_ind){
+            std::vector<double> res(nb_g_extra_[constraint_ind]);
+            std::copy(g_extra_ub_[constraint_ind].begin(), 
+                      g_extra_ub_[constraint_ind].end(), res.begin());
+            return res;
+        };
+
+        // Getters for constraint sizes
+        int get_nb_g0(){ return nb_g0_;};
+        int get_nb_gT(){ return nb_gT_;};
+        int get_nb_g_fixed(){ return nb_g_fixed_;};
+        int get_nb_g_extra(int constraint_ind){ 
+            return nb_g_extra_[constraint_ind];
+        };
+        int get_nb_g_disc(int n){ 
+            return nb_g_disc_[nb_steps_mapping_[n].value()];
+        };
+
+
     protected:
         // problem sizes
         int nx_;
