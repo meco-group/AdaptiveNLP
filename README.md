@@ -63,7 +63,7 @@ it. The lander is subject to a lunar gravitational pull and has one thruster to 
 <!-- ![bang-bang-controls](examples/moonlanderExample/figures/controls.png) -->
 
 <p align="center">
-<img src="examples/moonlanderExample/figures/controls.png" width="400">
+<img src="examples/moonlanderExample/figures/controls.png" width="600">
 </p>
 
 <!-- ![Jacobian-animation](examples/moonlanderExample/figures/sparsities/animation_jac_adaptive.gif) -->
