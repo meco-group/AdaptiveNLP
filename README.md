@@ -6,7 +6,7 @@ Structures for Optimal Control Problems
 ## Installation
 To use the framework, first clone this repo locally
 ```
-git clone
+git clone git@gitlab.kuleuven.be:meco-projects/adaptivenlp.git
 ```
 
 
