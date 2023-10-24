@@ -118,7 +118,7 @@ void MoonlanderHelper::performAdaptiveLoop(BuildingBlocks& blocks, double T,
         } else {
             init_guess = std::vector<double>(1 + nx*(adaptiveNLP.getN()+1) + 
                                              nu*adaptiveNLP.getN(), 0.0);
-            init_guess[0] = blocks.t_init_;
+            init_guess[0] = blocks.get_t_init();
         }
         auto stop = high_resolution_clock::now();
         updating_times.push_back(
@@ -347,26 +347,27 @@ void MoonlanderHelper::performCasadiLoop(BuildingBlocks& blocks, double T,
         MX t = opti.variable(1, 1);
 
         // objective
-        MX obj = blocks.Phi_0_({xx(Slice(),0), t, 0})[0] + 
-                blocks.Phi_f_({xx(Slice(),N), t, 0})[0];
+        MX obj = blocks.eval_Phi_0({xx(Slice(),0), t, 0})[0] + 
+                blocks.eval_Phi_f({xx(Slice(),N), t, 0})[0];
         for (int k = 0; k < N; k++){
-            obj += blocks.phi_({xx(Slice(), k), uu(Slice(), k), 
+            obj += blocks.eval_phi({xx(Slice(), k), uu(Slice(), k), 
                             (grid[k+1]-grid[k]), t, 0})[0];
         }
         opti.minimize(obj);
 
         // constraints
-        opti.subject_to((blocks.g0_lb_ <= 
-                        blocks.g0_({xx(Slice(),0), t, 0})[0]) <= blocks.g0_ub_);
+        opti.subject_to((blocks.get_g0_lb() <= 
+                        blocks.eval_g0({xx(Slice(),0), t, 0})[0]) <= 
+                        blocks.get_g0_ub());
         for (int k = 0; k < N; k++){
-            opti.subject_to((blocks.g_fixed_lb_ <= 
-                blocks.g_fixed_({xx(Slice(), k), uu(Slice(), k), 0})[0]) <= 
-                blocks.g_fixed_ub_);
+            opti.subject_to((blocks.get_g_fixed_lb() <= 
+                blocks.eval_g_fixed({xx(Slice(), k), uu(Slice(), k), 0})[0]) <= 
+                blocks.get_g_fixed_ub());
         }
 
-        opti.subject_to((blocks.gT_lb_ <= 
-                        blocks.gT_({xx(Slice(),N), 0})[0]) 
-                        <= blocks.gT_ub_);
+        opti.subject_to((blocks.get_gT_lb() <= 
+                        blocks.eval_gT({xx(Slice(),N), 0})[0]) 
+                        <= blocks.get_gT_ub());
 
         int k_offset = 0;
         std::vector<double> dts;
@@ -386,9 +387,8 @@ void MoonlanderHelper::performCasadiLoop(BuildingBlocks& blocks, double T,
             }
 
             opti.subject_to(
-                blocks.g_disc_
-                    [blocks.nb_steps_mapping_[nb_steps[k]].value()]
-                    ({local_xx, local_uu, dts, t, 0})[0] == 0);
+                blocks.eval_g_disc
+                    ({local_xx, local_uu, dts, t, 0}, nb_steps[k])[0] == 0);
 
             k_offset += nb_steps[k]-1;
         }
@@ -409,11 +409,11 @@ void MoonlanderHelper::performCasadiLoop(BuildingBlocks& blocks, double T,
         } else {
             for (int i = 0; i < N+1; i++){ 
                 opti.set_initial(xx(Slice(), i), 
-                                 blocks.x_init_({DM(grid[i])})[0]);
+                                 blocks.eval_x_init({DM(grid[i])})[0]);
             }
             for (int i = 0; i < N; i++){ 
                 opti.set_initial(uu(Slice(), i), 
-                                 blocks.u_init_({DM(grid[i])})[0]);
+                                 blocks.eval_u_init({DM(grid[i])})[0]);
             }
             opti.set_initial(t, 5);
         }

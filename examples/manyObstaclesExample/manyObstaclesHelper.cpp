@@ -98,10 +98,10 @@ bool ManyObstaclesHelper::processObstacleConstraintsCasadi(casadi::Opti& opti,
                 dist_to_obs = std::pow(sol[0][k] - x[i], 2) + 
                               std::pow(sol[1][k] - y[i], 2);
                 if (dist_to_obs < std::pow(r[i] + 0.25, 2)){
-                    opti.subject_to((blocks.g_extra_lb_[0] <= 
-                        blocks.g_extra_[0]({xx(Slice(), k), uu(Slice(), k), 
-                                            params})[0]) <= 
-                        blocks.g_extra_ub_[0]);
+                    opti.subject_to((blocks.get_g_extra_lb(0) <= 
+                        blocks.eval_g_extra({xx(Slice(), k), uu(Slice(), k), 
+                                            params}, 0)[0]) <= 
+                        blocks.get_g_extra_ub(0));
                     
                     if (dist_to_obs < std::pow(r[i]-1.0e-6, 2)){
                        collision_detected = true;
@@ -188,30 +188,32 @@ double ManyObstaclesHelper::solveCompleteNLPCasadi(BuildingBlocks& blocks,
         std::vector<double>(N));;
 
     // objective
-    MX obj = blocks.Phi_0_({xx(Slice(),0), t, 0})[0] + 
-             blocks.Phi_f_({xx(Slice(),N), t, 0})[0];
+    MX obj = blocks.eval_Phi_0({xx(Slice(),0), t, 0})[0] + 
+             blocks.eval_Phi_f({xx(Slice(),N), t, 0})[0];
     for (int k = 0; k < N; k++){
-        obj += blocks.phi_({xx(Slice(), k), uu(Slice(), k), dt, t, 0})[0];
+        obj += blocks.eval_phi({xx(Slice(), k), uu(Slice(), k), dt, t, 0})[0];
     }
     opti.minimize(obj);
 
     // constraints
-    opti.subject_to((blocks.g0_lb_ <= blocks.g0_({xx(Slice(),0), t, x0})[0]) <= 
-                    blocks.g0_ub_);
-    opti.subject_to((blocks.gT_lb_ <= blocks.gT_({xx(Slice(),N), xf})[0]) <= 
-                    blocks.gT_ub_);
+    opti.subject_to((blocks.get_g0_lb() <= 
+                    blocks.eval_g0({xx(Slice(),0), t, x0})[0]) <= 
+                    blocks.get_g0_ub());
+    opti.subject_to((blocks.get_gT_lb() <= 
+                    blocks.eval_gT({xx(Slice(),N), xf})[0]) <= 
+                    blocks.get_gT_ub());
     std::vector<double> p_obs(3);
     for (int k = 0; k < N; k++){
-        opti.subject_to((blocks.g_fixed_lb_ <= 
-            blocks.g_fixed_({xx(Slice(), k), uu(Slice(), k), 0})[0]) <= 
-            blocks.g_fixed_ub_);
+        opti.subject_to((blocks.get_g_fixed_lb() <= 
+            blocks.eval_g_fixed({xx(Slice(), k), uu(Slice(), k), 0})[0]) <= 
+            blocks.get_g_fixed_ub());
         
         for (int i = 0; i < obstacle_x.size(); i++){
             p_obs = {obstacle_x[i], obstacle_y[i], obstacle_r[i]};
-            opti.subject_to((blocks.g_extra_lb_[0] <= 
-                blocks.g_extra_[0]({xx(Slice(), k), uu(Slice(), k), 
-                                    p_obs})[0]) <= 
-                blocks.g_extra_ub_[0]);
+            opti.subject_to((blocks.get_g_extra_lb(0) <= 
+                blocks.eval_g_extra({xx(Slice(), k), uu(Slice(), k), 
+                                      p_obs}, 0)[0]) <= 
+                blocks.get_g_extra_ub(0));
         }
     }
 
@@ -221,24 +223,26 @@ double ManyObstaclesHelper::solveCompleteNLPCasadi(BuildingBlocks& blocks,
         if (nb_steps == 2){
             MX local_xx = horzcat(xx(Slice(), j), xx(Slice(), j+1));
             opti.subject_to(
-                blocks.g_disc_[0]({local_xx, uu(Slice(), j), dt, t, 0})[0] == 0);
+                blocks.eval_g_disc({local_xx, uu(Slice(), j), dt, t}, 
+                                    nb_steps)[0] == 0);
         } else {
             MX local_xx = horzcat(xx(Slice(), 2*j), xx(Slice(), 2*j+1),
                                   xx(Slice(), 2*j+2));
             MX local_uu = horzcat(uu(Slice(), 2*j), uu(Slice(), 2*j+1));
             opti.subject_to(
-                blocks.g_disc_[0]({local_xx, local_uu, 
-                                std::vector<double>{dt, dt}, t, 0})[0] == 0);
+                blocks.eval_g_disc({local_xx, local_uu, 
+                                std::vector<double>{dt, dt}, t, 0}, 
+                                nb_steps)[0] == 0);
         }
     }
 
 
     // initial guess
     for (int i = 0; i < N+1; i++){ 
-        opti.set_initial(xx(Slice(), i), blocks.x_init_({DM(dt*i)})[0]);
+        opti.set_initial(xx(Slice(), i), blocks.eval_x_init({DM(dt*i)})[0]);
     }
     for (int i = 0; i < N; i++){ 
-        opti.set_initial(uu(Slice(), i), blocks.u_init_({DM(dt*i)})[0]);
+        opti.set_initial(uu(Slice(), i), blocks.eval_u_init({DM(dt*i)})[0]);
     }
 
     // set parameters
@@ -294,23 +298,25 @@ double ManyObstaclesHelper::performCasadiLoopReformulation(
         std::vector<double>(N));;
 
     // objective
-    MX obj = blocks.Phi_0_({xx(Slice(),0), t, 0})[0] + 
-             blocks.Phi_f_({xx(Slice(),N), t, 0})[0];
+    MX obj = blocks.eval_Phi_0({xx(Slice(),0), t, 0})[0] + 
+             blocks.eval_Phi_f({xx(Slice(),N), t, 0})[0];
     for (int k = 0; k < N; k++){
-        obj += blocks.phi_({xx(Slice(), k), uu(Slice(), k), dt, t, 0})[0];
+        obj += blocks.eval_phi({xx(Slice(), k), uu(Slice(), k), dt, t, 0})[0];
     }
     opti.minimize(obj);
 
     // constraints
-    opti.subject_to((blocks.g0_lb_ <= blocks.g0_({xx(Slice(),0), t, x0})[0]) <= 
-                    blocks.g0_ub_);
-    opti.subject_to((blocks.gT_lb_ <= blocks.gT_({xx(Slice(),N), xf})[0]) <= 
-                    blocks.gT_ub_);
+    opti.subject_to((blocks.get_g0_lb() <= 
+                    blocks.eval_g0({xx(Slice(),0), t, x0})[0]) <= 
+                    blocks.get_g0_ub());
+    opti.subject_to((blocks.get_gT_lb() <= 
+                    blocks.eval_gT({xx(Slice(),N), xf})[0]) <= 
+                    blocks.get_gT_ub());
     std::vector<double> p_obs(3);
     for (int k = 0; k < N; k++){
-        opti.subject_to((blocks.g_fixed_lb_ <= 
-            blocks.g_fixed_({xx(Slice(), k), uu(Slice(), k), 0})[0]) <= 
-            blocks.g_fixed_ub_);
+        opti.subject_to((blocks.get_g_fixed_lb() <= 
+            blocks.eval_g_fixed({xx(Slice(), k), uu(Slice(), k), 0})[0]) <= 
+            blocks.get_g_fixed_ub());
     }
 
     assert (nb_steps == 2 || nb_steps == 3);
@@ -318,14 +324,15 @@ double ManyObstaclesHelper::performCasadiLoopReformulation(
         if (nb_steps == 2){
             MX local_xx = horzcat(xx(Slice(), j), xx(Slice(), j+1));
             opti.subject_to(
-                blocks.g_disc_[0]({local_xx, uu(Slice(), j), dt, t, 0})[0] == 0);
+                blocks.eval_g_disc({local_xx, uu(Slice(), j), dt, t, 0}, 
+                                    nb_steps)[0] == 0);
         } else {
             MX local_xx = horzcat(xx(Slice(), 2*j), xx(Slice(), 2*j+1),
                                   xx(Slice(), 2*j+2));
             MX local_uu = horzcat(uu(Slice(), 2*j), uu(Slice(), 2*j+1));
             opti.subject_to(
-                blocks.g_disc_[0]({local_xx, local_uu, 
-                                std::vector<double>{dt, dt}, t, 0})[0] == 0);
+                blocks.eval_g_disc({local_xx, local_uu, 
+                                std::vector<double>{dt, dt}, t, 0}, 0)[0] == 0);
         }
     }
 
@@ -341,10 +348,12 @@ double ManyObstaclesHelper::performCasadiLoopReformulation(
         
         if (iteration == 0){
             for (int i = 0; i < N+1; i++){ 
-                opti.set_initial(xx(Slice(), i), blocks.x_init_({DM(dt*i)})[0]);
+                opti.set_initial(xx(Slice(), i), 
+                                 blocks.eval_x_init({DM(dt*i)})[0]);
             }
             for (int i = 0; i < N; i++){ 
-                opti.set_initial(uu(Slice(), i), blocks.u_init_({DM(dt*i)})[0]);
+                opti.set_initial(uu(Slice(), i), 
+                                 blocks.eval_u_init({DM(dt*i)})[0]);
             }
         } else {
             for (int k = 0; k < N-1; k++){

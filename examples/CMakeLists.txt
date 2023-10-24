@@ -55,3 +55,24 @@ target_link_libraries(moonlanderExample
     ${CASADI_LIBRARIES}
     ipopt
 )
+
+############################
+## MANY OBSTACLES EXAMPLE ##
+############################
+
+add_executable(manyObstaclesExample
+    manyObstaclesExample/manyObstaclesExample.cpp
+    manyObstaclesExample/manyObstaclesHelper.cpp
+    manyObstaclesExample/manyObstaclesHelper.hpp
+    ${COMMON_EXAMPLE_SOURCES}
+)
+
+target_include_directories(manyObstaclesExample PRIVATE 
+    ${CMAKE_SOURCE_DIR}/examples
+)
+
+target_link_libraries(manyObstaclesExample
+    ${PROJECT_NAME}
+    ${CASADI_LIBRARIES}
+    ipopt
+)

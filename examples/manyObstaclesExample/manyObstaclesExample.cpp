@@ -1,6 +1,7 @@
 #include "core.hpp"
 #include "plotter.hpp"
 #include "manyObstaclesHelper.hpp"
+#include "makeBuildingBlocks.hpp"
 #include <iostream>
 #include <vector>
 #include <cstdlib>
@@ -142,15 +143,16 @@ int main(){
     // }
     // cout<<")"<<endl;
 
-    if (nb_obs == obstacle_x_tot.size()-1){
-        for (int i = 0; i < nb_iterations_adaptive; i++){
-            plotter.plotTrajectory(formatted_solutions_adaptive[i][0], 
-                                formatted_solutions_adaptive[i][1]);
-        }
-        plotter.plotTrajectory(formatted_solutions_casadi_1[0][0],
-                            formatted_solutions_casadi_1[0][1]);
-
-        }
+    // if (nb_obs == obstacle_x_tot.size()-1){
+    //     for (int i = 0; i < nb_iterations_adaptive; i++){
+    //         plotter.plotTrajectory(formatted_solutions_adaptive[i][0], 
+    //                             formatted_solutions_adaptive[i][1]);
+    //     }
+    //     plotter.plotTrajectory(formatted_solutions_casadi_1[0][0],
+    //                         formatted_solutions_casadi_1[0][1]);
+    // 
+    // }
+    
     }
     }
 

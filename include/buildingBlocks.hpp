@@ -10,9 +10,6 @@ using namespace casadi;
 class NLPInterface;
 class Bookkeeper;
 class AdaptiveNLP;
-class ManyObstaclesHelper;
-class VirtualObstacleHelper;
-class MoonlanderHelper;
 
 // Class to collect the building blocks defining a discretized OCP.
 // For fixed-time problems, the discrete NLP is given by:
@@ -40,9 +37,6 @@ class BuildingBlocks{
     friend class NLPInterface;
     friend class Bookkeeper;
     friend class AdaptiveNLP;
-    friend class ManyObstaclesHelper;
-    friend class VirtualObstacleHelper;
-    friend class MoonlanderHelper;
 
     public:
         // default Constructor
