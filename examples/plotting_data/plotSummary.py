@@ -4,7 +4,9 @@ import csv
 import numpy as np
 import pickle
 
-folder = "plotting_data"
+import pathlib
+folder = str(pathlib.Path(__file__).parent.resolve()) # "examples/plotting_data"
+figure_folder = folder + "/../figures"
 
 def latexify():
     fontsize = 15
@@ -250,7 +252,7 @@ legend = axs_summary_1.legend(bbox_to_anchor=(1.7, 0.5), loc="center right")
 
 plt.subplots_adjust(left=0.15, bottom=0.15)
 # plt.tight_layout()
-plt.savefig("figures/animation_summary.pdf")
+plt.savefig(figure_folder + "/animation_summary.pdf")
 
 plt.close()
 
@@ -305,6 +307,6 @@ axs_summary_0.set_yticks([136, 200, 300, 376])
 
 plt.subplots_adjust(left=0.15, bottom=0.15)
 # plt.tight_layout()
-plt.savefig("figures/animation_constraint_summary.pdf")
+plt.savefig(figure_folder + "/animation_constraint_summary.pdf")
 
 plt.close()

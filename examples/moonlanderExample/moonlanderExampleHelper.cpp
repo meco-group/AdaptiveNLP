@@ -420,8 +420,6 @@ void MoonlanderHelper::performCasadiLoop(BuildingBlocks& blocks, double T,
 
         // set parameters
         opti.solver("ipopt", {{"print_time", false}, {"record_time", true}}, {{"print_level", print_level}});
-        // opti.solver("ipopt", {}, {{"print_level", print_level}});
-        // opti.advanced().get_solver().print_options();
         auto stop = high_resolution_clock::now();
         updating_times.push_back(double(
             duration_cast<microseconds>(stop-start).count())/(1.0e3)); 
@@ -863,8 +861,10 @@ void MoonlanderHelper::getSparsities(Opti opti, std::vector<int>& jac_row,
                                      std::vector<int>& jac_col, 
                                      std::vector<int>& hess_row,
                                      std::vector<int>& hess_col){
-    Function J = opti.advanced().get_solver().get_function("nlp_jac_g");
-    Sparsity sp = J.sparsity_out(1);
+    MX J = jacobian(opti.g(), opti.x());
+    Sparsity sp = J.sparsity();
+    // // Function J = opti.advanced().get_solver().get_function("nlp_jac_g");
+    // Sparsity sp = J.sparsity_out(1);
 
     for (int i = 0; i < sp.size1(); i++){
         for (int j = 0; j < sp.size2(); j++){
@@ -875,8 +875,10 @@ void MoonlanderHelper::getSparsities(Opti opti, std::vector<int>& jac_row,
         }
     }
 
-    Function H = opti.advanced().get_solver().get_function("nlp_hess_l");
-    sp = H.sparsity_out(0);
+    MX H = hessian(opti.f() + mtimes(transpose(opti.lam_g()), opti.g()), opti.x());
+    sp = H.sparsity();
+    // Function H = opti.advanced().get_solver().get_function("nlp_hess_l");
+    // sp = H.sparsity_out(0);
 
     for (int i = 0; i < sp.size1(); i++){
         for (int j = i; j < sp.size2(); j++){

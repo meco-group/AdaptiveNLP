@@ -2,7 +2,9 @@ import matplotlib.pyplot as plt
 import csv
 import numpy as np
 
-folder = "plotting_data"
+import pathlib
+folder = str(pathlib.Path(__file__).parent.resolve()) # "examples/plotting_data"
+figure_folder = folder + "/../figures"
 
 def latexify():
     fontsize = 15
@@ -79,8 +81,8 @@ text_shift = 0.28
 for j in range(len(medians)):
     plt.text(positions[j]+text_shift, medians[j], round(medians[j], 2))
 
-plt.savefig("figures/adaptive_gridding_timings.pdf")
-# plt.savefig("figures/adaptive_gridding_timings.png", dpi=400)
+plt.savefig(figure_folder + "/adaptive_gridding_timings.pdf")
+# plt.savefig(figure_folder + "/adaptive_gridding_timings.png", dpi=400)
 
 
 
@@ -106,8 +108,8 @@ text_shift = 0.28
 for j in range(4):
     plt.text(positions[j]+text_shift, medians[j], round(medians[j], 2))
 
-plt.savefig("figures/adaptive_gridding_timings_0.pdf")
-# plt.savefig("figures/adaptive_gridding_timings_0.png", dpi=400)
+plt.savefig(figure_folder + "/adaptive_gridding_timings_0.pdf")
+# plt.savefig(figure_folder + "/adaptive_gridding_timings_0.png", dpi=400)
 
 # figure adaptive
 plt.figure()
@@ -132,8 +134,8 @@ text_shift = 0.28
 for j in range(4):
     plt.text(positions[j]+text_shift, medians[4+j], round(medians[4+j], 2))
 
-# plt.savefig("figures/adaptive_gridding_timings_1.png", dpi=400)
-plt.savefig("figures/adaptive_gridding_timings_1.pdf")
+# plt.savefig(figure_folder + "/adaptive_gridding_timings_1.png", dpi=400)
+plt.savefig(figure_folder + "/adaptive_gridding_timings_1.pdf")
 
 
 from matplotlib.gridspec import GridSpec
@@ -201,6 +203,6 @@ legend_ax = fig.add_subplot(gs[1, 0])
 legend_ax.axis('off')  # Turn off the axes for the legend subplot
 legend = axs.legend(bbox_to_anchor=(0.5, -0.12), loc='upper center', ncol=3)
 
-plt.savefig("figures/adpative_gridding_timings_bars.pdf")
+plt.savefig(figure_folder + "/adpative_gridding_timings_bars.pdf")
 
 plt.close()

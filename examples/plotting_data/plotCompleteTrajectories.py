@@ -5,7 +5,9 @@ import csv
 import numpy as np
 import pickle
 
-folder = "plotting_data"
+import pathlib
+folder = str(pathlib.Path(__file__).parent.resolve()) # "examples/plotting_data"
+figure_folder = folder + "/../figures"
 
 def latexify():
     fontsize = 9
@@ -338,7 +340,7 @@ for t in legend.texts:
         t.set_verticalalignment("center")
     # t.set_multialignment('bottom')
 
-plt.savefig("figures/final_result.pdf")
+plt.savefig(figure_folder + "/final_result.pdf")
 
 plt.close()
 
@@ -361,5 +363,5 @@ axs[1].set_xlim(0, frame_nb-1)
 # plt.tight_layout()
 plt.subplots_adjust(left=0.15, bottom=0.2, hspace=0.35)
 
-# plt.savefig("figures/final_result_controls.png", dpi=400)
-plt.savefig("figures/final_result_controls.pdf")
+# plt.savefig(figure_folder + "/final_result_controls.png", dpi=400)
+plt.savefig(figure_folder + "/final_result_controls.pdf")

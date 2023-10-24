@@ -2,7 +2,9 @@ import matplotlib.pyplot as plt
 import csv
 import numpy as np
 
-folder = "plotting_data"
+import pathlib
+folder = str(pathlib.Path(__file__).parent.resolve()) # "examples/plotting_data"
+figure_folder = folder + "/../figures"
 
 def latexify():
     fontsize = 15
@@ -200,4 +202,4 @@ plt.ylabel("time [ms]")
 
 plt.legend()
 
-plt.savefig("figures/computation_times_bars.pdf")
+plt.savefig(figure_folder + "/computation_times_bars.pdf")

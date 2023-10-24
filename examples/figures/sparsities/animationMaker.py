@@ -14,9 +14,10 @@ def create_gif(png_folder, gif_file, delay, start_str):
     # Save as an animated GIF
     images[0].save(gif_file, save_all=True, append_images=images[1:], optimize=False, duration=delay, loop=0)
 
-# Example usage
-png_folder = 'figures/sparsities'
-gif_folder = 'figures/sparsities/'
+import pathlib
+png_folder = str(pathlib.Path(__file__).parent.resolve()) # 'figures/sparsities'
+gif_folder = png_folder + "/"
+
 delay = 300  # Delay between frames in milliseconds
 
 create_gif(png_folder, gif_folder+'animation_jac_adaptive.gif', delay, 

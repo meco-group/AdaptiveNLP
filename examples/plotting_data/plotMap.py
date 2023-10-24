@@ -5,7 +5,9 @@ import csv
 import numpy as np
 import pickle
 
-folder = "plotting_data"
+import pathlib
+folder = str(pathlib.Path(__file__).parent.resolve()) # "examples/plotting_data"
+figure_folder = folder + "/../figures"
 
 def latexify():
     fontsize = 15
@@ -175,9 +177,9 @@ legend = axs.legend(bbox_to_anchor=(0.5, -0.3), loc='upper center', ncol=3)
 # legend.set_in_layout(False)  # Prevent the legend from affecting layout
 
 # plt.tight_layout()
-plt.savefig("figures/map.pdf")
+plt.savefig(figure_folder + "/map.pdf")
 
 # import tikzplotlib
-# tikzplotlib.save("figures/map.tex")
+# tikzplotlib.save(figure_folder + "/map.tex")
 
 plt.close()

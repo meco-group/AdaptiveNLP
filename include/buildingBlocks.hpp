@@ -10,7 +10,6 @@ using namespace casadi;
 class NLPInterface;
 class Bookkeeper;
 class AdaptiveNLP;
-class AdaptiveCorridorHelper;
 class ManyObstaclesHelper;
 class VirtualObstacleHelper;
 class MoonlanderHelper;
@@ -41,7 +40,6 @@ class BuildingBlocks{
     friend class NLPInterface;
     friend class Bookkeeper;
     friend class AdaptiveNLP;
-    friend class AdaptiveCorridorHelper;
     friend class ManyObstaclesHelper;
     friend class VirtualObstacleHelper;
     friend class MoonlanderHelper;

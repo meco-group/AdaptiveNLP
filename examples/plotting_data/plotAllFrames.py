@@ -3,7 +3,10 @@ import csv
 import numpy as np
 import pickle
 
-folder = "plotting_data"
+import pathlib
+folder = str(pathlib.Path(__file__).parent.resolve()) # "examples/plotting_data"
+figure_folder = folder + "/../figures"
+
 
 def latexify():
     fontsize = 15
@@ -292,7 +295,7 @@ for frame_nb in range(len(timings_adaptive)):
     plt.subplots_adjust(bottom=0.2, left=0.15, right=0.85, top=0.9)
 
     # plt.show()
-    plt.savefig("figures/animation/animation_frame_" + str(frame_nb) + ".png", dpi=200)
+    plt.savefig(figure_folder + "/animation/animation_frame_" + str(frame_nb) + ".png", dpi=200)
     # plt.savefig("figures/animation/animation_frame_" + str(frame_nb) + ".pdf")
 
     if (frame_nb == len(timings_adaptive)-1):
@@ -361,6 +364,6 @@ for frame_nb in range(len(timings_adaptive)):
         axs_summary[1].set_xlabel("iteration number")
         axs_summary[1].set_ylabel("time [ms]")
         
-        plt.savefig("figures/animation_summary.png", dpi=400)
+        plt.savefig(figure_folder + "/animation_summary.png", dpi=400)
 
     plt.close()

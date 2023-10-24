@@ -14,9 +14,10 @@ def create_gif(png_folder, gif_file, delay):
     # Save as an animated GIF
     images[0].save(gif_file, save_all=True, append_images=images[1:], optimize=False, duration=delay, loop=0)
 
-# Example usage
-png_folder = 'figures/animation_controls'
-gif_file = 'figures/animation_controls/animation_controls.gif'
+import pathlib
+png_folder = str(pathlib.Path(__file__).parent.resolve()) # 'figures/animation_controls'
+frame_format = '.png'
+gif_file = png_folder + "/animation.gif" #'figures/animation_controls/animation_controls.gif'
 delay = 100  # Delay between frames in milliseconds
 
 create_gif(png_folder, gif_file, delay)

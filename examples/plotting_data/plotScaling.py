@@ -3,7 +3,9 @@ import csv
 import numpy as np
 from matplotlib.gridspec import GridSpec
 
-folder = "plotting_data"
+import pathlib
+folder = str(pathlib.Path(__file__).parent.resolve()) # "examples/plotting_data"
+figure_folder = folder + "/../figures"
 
 def latexify():
     fontsize = 15
@@ -90,7 +92,7 @@ legend_ax = fig.add_subplot(gs[1, 0])
 legend_ax.axis('off')
 legend = ax.legend(legend_handles, legend_labels, bbox_to_anchor=(0.5, -0.2), ncol=3, loc="upper center")
 
-plt.savefig("figures/scaling_old.pdf")
+plt.savefig(figure_folder + "/scaling_old.pdf")
 
 
 time_categories = ["$t_{solve}$", "$t_{update}$", "$t_{total}$"]
@@ -189,4 +191,4 @@ legend = ax1.legend(legend_handles_short, legend_labels_short, bbox_to_anchor=(1
 
 plt.subplots_adjust(wspace=0.3)
 
-plt.savefig("figures/scaling.pdf")
+plt.savefig(figure_folder + "/scaling.pdf")

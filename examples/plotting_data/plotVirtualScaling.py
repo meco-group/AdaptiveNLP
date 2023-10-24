@@ -2,7 +2,9 @@ import matplotlib.pyplot as plt
 import csv
 import numpy as np
 
-folder = "plotting_data"
+import pathlib
+folder = str(pathlib.Path(__file__).parent.resolve()) # "examples/plotting_data"
+figure_folder = folder + "/../figures"
 
 def latexify():
     fontsize = 15
@@ -58,6 +60,6 @@ for i in range(len(nb_obs)):
     
 
 
-plt.savefig("figures/virtual_obstacles_scaling.png", dpi=400)
+plt.savefig(figure_folder + "/virtual_obstacles_scaling.png", dpi=400)
 
 plt.close()

@@ -4,7 +4,9 @@ import numpy as np
 from matplotlib.patches import Rectangle
 from matplotlib.ticker import MultipleLocator
 
-folder = "plotting_data"
+import pathlib
+folder = str(pathlib.Path(__file__).parent.resolve()) # "examples/plotting_data"
+figure_folder = folder + "/../figures"
 
 def latexify():
     fontsize = 30
@@ -136,9 +138,9 @@ for iteration in range(len(jac_rows_adaptive)):
     
     plt.subplots_adjust(top=0.8)
     plt.title(f"iteration {iteration}")
-    plt.savefig("figures/sparsities/jac_adaptive_"+str(iteration)+".png",
+    plt.savefig(figure_folder + "/sparsities/jac_adaptive_"+str(iteration)+".png",
                 dpi=400)
-    # plt.savefig("figures/sparsities/jac_adaptive_"+str(iteration)+".pdf")
+    # plt.savefig(figure_folder + "/sparsities/jac_adaptive_"+str(iteration)+".pdf")
     plt.close()
     
     plotSparsity(hess_rows_adaptive[iteration], hess_cols_adaptive[iteration], 
@@ -147,18 +149,18 @@ for iteration in range(len(jac_rows_adaptive)):
     
     plt.subplots_adjust(top=0.8)
     plt.title(f"iteration {iteration}")
-    plt.savefig("figures/sparsities/hess_adaptive_"+str(iteration)+".png",
+    plt.savefig(figure_folder + "/sparsities/hess_adaptive_"+str(iteration)+".png",
                 dpi=400)
-    # plt.savefig("figures/sparsities/hess_adaptive_"+str(iteration)+".pdf")
+    # plt.savefig(figure_folder + "/sparsities/hess_adaptive_"+str(iteration)+".pdf")
     
     plotSparsity(jac_rows_casadi[iteration], jac_cols_casadi[iteration], 
                  jac_max_rows_casadi, jac_max_cols_casadi, False)
     
     plt.subplots_adjust(top=0.8)
     plt.title(f"iteration {iteration}")
-    plt.savefig("figures/sparsities/jac_casadi_"+str(iteration)+".png",
+    plt.savefig(figure_folder + "/sparsities/jac_casadi_"+str(iteration)+".png",
                 dpi=400)
-    # plt.savefig("figures/sparsities/jac_casadi_"+str(iteration)+".pdf")
+    # plt.savefig(figure_folder + "/sparsities/jac_casadi_"+str(iteration)+".pdf")
     plt.close()
     
     plotSparsity(hess_rows_casadi[iteration], hess_cols_casadi[iteration], 
@@ -167,8 +169,8 @@ for iteration in range(len(jac_rows_adaptive)):
     
     plt.subplots_adjust(top=0.8)
     plt.title(f"iteration {iteration}")
-    plt.savefig("figures/sparsities/hess_casadi_"+str(iteration)+".png",
+    plt.savefig(figure_folder + "/sparsities/hess_casadi_"+str(iteration)+".png",
                 dpi=400)
-    # plt.savefig("figures/sparsities/hess_casadi_"+str(iteration)+".pdf")
+    # plt.savefig(figure_folder + "/sparsities/hess_casadi_"+str(iteration)+".pdf")
     plt.close()
 

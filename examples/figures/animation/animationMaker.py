@@ -14,10 +14,10 @@ def create_gif(png_folder, gif_file, delay, frame_format):
     # Save as an animated GIF
     images[0].save(gif_file, save_all=True, append_images=images[1:], optimize=False, duration=delay, loop=0)
 
-
-png_folder = 'figures/animation'
+import pathlib
+png_folder = str(pathlib.Path(__file__).parent.resolve()) # 'figures/animation'
 frame_format = '.png'
-gif_file = 'figures/animation/animation.gif'
+gif_file = png_folder + "/animation.gif" #'figures/animation/animation.gif'
 delay = 100  # Delay between frames in milliseconds
 
 create_gif(png_folder, gif_file, delay, frame_format)

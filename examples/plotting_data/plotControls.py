@@ -2,7 +2,9 @@ import matplotlib.pyplot as plt
 import csv
 import numpy as np
 
-folder = "plotting_data"
+import pathlib
+folder = str(pathlib.Path(__file__).parent.resolve()) # "examples/plotting_data"
+figure_folder = folder + "/../figures"
 
 def latexify():
     fontsize = 15
@@ -53,4 +55,4 @@ plt.legend([plt.Line2D([], [], color='royalblue', marker='o',
 
 # plt.show()
 plt.subplots_adjust(bottom=0.3)
-plt.savefig("figures/controls.pdf")
+plt.savefig(figure_folder + "/controls.pdf")
