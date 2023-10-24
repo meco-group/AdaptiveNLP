@@ -244,9 +244,10 @@ double ManyObstaclesHelper::solveCompleteNLPCasadi(BuildingBlocks& blocks,
     for (int i = 0; i < N; i++){ 
         opti.set_initial(uu(Slice(), i), blocks.eval_u_init({DM(dt*i)})[0]);
     }
+    opti.set_initial(t, blocks.get_t_init());
 
     // set parameters
-    opti.solver("ipopt", {}, {{"print_level", 0}});
+    opti.solver("ipopt", {}, {{"print_level", 5}});
 
     // solve problem
     auto start = high_resolution_clock::now();
@@ -332,7 +333,8 @@ double ManyObstaclesHelper::performCasadiLoopReformulation(
             MX local_uu = horzcat(uu(Slice(), 2*j), uu(Slice(), 2*j+1));
             opti.subject_to(
                 blocks.eval_g_disc({local_xx, local_uu, 
-                                std::vector<double>{dt, dt}, t, 0}, 0)[0] == 0);
+                                std::vector<double>{dt, dt}, t, 0}, 
+                                nb_steps)[0] == 0);
         }
     }
 

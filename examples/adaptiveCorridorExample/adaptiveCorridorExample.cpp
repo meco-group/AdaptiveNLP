@@ -74,6 +74,9 @@ int main(){
     // create plotter object
     Plotter plotter = Plotter(blocks.getFreeTime(), blocks.get_nx(), 
                               blocks.get_nu(), view_radius);
+    std::string file_path = __FILE__;
+    std::string dir_path = file_path.substr(0, file_path.rfind("/"));
+    plotter.setOutputFolder(dir_path + "/plotting_data/");
     Plotter* plotter_ptr = nullptr;
     if (USE_PLOTTER){
         plotter_ptr = &plotter;
@@ -149,7 +152,7 @@ int main(){
 
     // // plotter.writeScaling();
     if (nb_runs == 1){
-       plotter.plotAnimationFramePython(nb_iterations-1);
+        plotter.plotAnimationFramePython(nb_iterations-1);
         plotter.plotComputationTimesFullFull();
     }
 

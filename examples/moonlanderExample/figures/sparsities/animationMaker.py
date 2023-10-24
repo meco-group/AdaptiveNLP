@@ -15,7 +15,7 @@ def create_gif(png_folder, gif_file, delay, start_str):
     images[0].save(gif_file, save_all=True, append_images=images[1:], optimize=False, duration=delay, loop=0)
 
 import pathlib
-png_folder = str(pathlib.Path(__file__).parent.resolve()) # 'figures/sparsities'
+png_folder = str(pathlib.Path(__file__).parent.resolve())
 gif_folder = png_folder + "/"
 
 delay = 300  # Delay between frames in milliseconds

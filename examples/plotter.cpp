@@ -154,7 +154,7 @@ void Plotter::writeControlsToFile(const double* sol){
 };
 
 void Plotter::writeControlsToFile(std::vector<std::vector<double>>& uu){
-    std::ofstream file("../../../examples/plotting_data/controls.csv");
+    std::ofstream file(output_folder_ + "controls.csv");
     if (file.is_open()){
         file<<"t";
         for (int i = 0; i < nu_; i++){

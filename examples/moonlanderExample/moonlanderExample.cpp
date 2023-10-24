@@ -30,6 +30,10 @@ int main(){
     MoonlanderHelper helper = MoonlanderHelper(blocks.get_nx(), 
                                                blocks.get_nu());
     
+    std::string file_path = __FILE__;
+    std::string dir_path = file_path.substr(0, file_path.rfind("/"));
+    helper.setOutputFolder(dir_path + "/plotting_data/");
+    
     int max_nb_refinements = 10;
     int print_level = 0;
 

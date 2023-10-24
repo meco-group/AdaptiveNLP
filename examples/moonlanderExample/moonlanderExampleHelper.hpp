@@ -48,6 +48,10 @@ class MoonlanderHelper {
                          std::vector<std::vector<int>>& hess_rows_casadi,
                          std::vector<std::vector<int>>& hess_cols_casadi);
 
+        void setOutputFolder(std::string output_folder){
+            output_folder_ = output_folder;
+        }
+
 
     private:
         std::vector<double> makeGrid(std::vector<double>& interval_lengths, 
@@ -83,6 +87,8 @@ class MoonlanderHelper {
         int nu;
         std::vector<Polynomial> px;
         std::vector<Polynomial> pu;
+
+        std::string output_folder_ = "plotting_data";
 };
 
 #endif

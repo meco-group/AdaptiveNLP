@@ -34,6 +34,9 @@ void MoonlanderHelper::performAdaptiveLoop(BuildingBlocks& blocks, double T,
     // create plotter object
     Plotter plotter = Plotter(blocks.getFreeTime(), blocks.get_nx(), 
                               blocks.get_nu());
+    std::string file_path = __FILE__;
+    std::string dir_path = file_path.substr(0, file_path.rfind("/"));
+    plotter.setOutputFolder(dir_path + "/plotting_data/");
 
     // create adaptive NLP object
     AdaptiveNLP adaptiveNLP = AdaptiveNLP(blocks, T, Nmax, 0);
@@ -581,7 +584,7 @@ void MoonlanderHelper::writeToFile(std::vector<double>& solving_times_adaptive,
                                 std::vector<double>& solving_times_casadi,
                                 std::vector<double>& err_comp_times_casadi,
                                 std::vector<double>& updating_times_casadi){
-    std::ofstream file("../../examples/plotting_data/adaptive_gridding_timings.csv");
+    std::ofstream file(output_folder_ + "adaptive_gridding_timings.csv");
     if (file.is_open()){
         file << "t_solve_adaptive, t_err_adative, t_update_adaptive, "
                 "t_solve_casadi, t_err_casadi, t_update_casadi\n";
@@ -606,7 +609,7 @@ void MoonlanderHelper::writeToFile(
                          std::vector<std::vector<int>>& jac_cols_casadi,
                          std::vector<std::vector<int>>& hess_rows_casadi,
                          std::vector<std::vector<int>>& hess_cols_casadi){
-    std::ofstream file1("../../examples/plotting_data/adaptive_gridding_sparsities_jac.csv");
+    std::ofstream file1(output_folder_ + "adaptive_gridding_sparsities_jac.csv");
     if (file1.is_open()){
         file1 << "jac_rows_adaptive, jac_cols_adative, jac_rows_casadi, "
                  "jac_cols_casadi\n";
@@ -622,7 +625,7 @@ void MoonlanderHelper::writeToFile(
         file1.close();
     }
 
-    std::ofstream file2("../../examples/plotting_data/adaptive_gridding_sparsities_hess.csv");
+    std::ofstream file2(output_folder_ + "adaptive_gridding_sparsities_hess.csv");
     if (file2.is_open()){
         file2 << "hess_rows_adaptive, hess_cols_adaptive, "
                 "hess_rows_casadi, hess_cols_casadi\n";

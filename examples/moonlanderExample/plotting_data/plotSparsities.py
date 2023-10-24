@@ -5,7 +5,7 @@ from matplotlib.patches import Rectangle
 from matplotlib.ticker import MultipleLocator
 
 import pathlib
-folder = str(pathlib.Path(__file__).parent.resolve()) # "examples/plotting_data"
+folder = str(pathlib.Path(__file__).parent.resolve())
 figure_folder = folder + "/../figures"
 
 def latexify():

@@ -740,7 +740,7 @@ BuildingBlocks makeBlocksManyObstacles(){
 	SX dt = SX::sym("dt", 1, 1);
     std::vector<SX> arg_phi = {xk, uk, dt, t, p};
     Function phi = Function("phi", {xk, uk, dt, t, p},
-							{t * dt * (uk(0)*uk(0) + uk(1)*uk(1))});
+							{0*t*dt*(uk(0)*uk(0) + uk(1)*uk(1))});
     Function phi_J = Function("phi_J", {xk, uk, dt, t, p},
                               {jacobian(phi(arg_phi)[0], vertcat(t, xk, uk))});
     Function phi_H = Function("phi_H", {xk, uk, dt, t, p},
@@ -864,9 +864,9 @@ BuildingBlocks makeBlocksManyObstacles(){
 
     // Initialization
 	double T = 1.0;
-    Function x_init = Function("x_init", {t}, {vertcat(3*t, 2*t, SX::zeros(2,1))});
+    Function x_init = Function("x_init", {t}, {vertcat(3*t, SX::zeros(3,1))});
     Function u_init = Function("u_init", {t}, {SX::zeros(2,1)});
-    myBlocks.add_inits(x_init, u_init, 5.0);
+    myBlocks.add_inits(x_init, u_init, 3.0);
     // cout<<"inits added"<<endl;
 
     return myBlocks;

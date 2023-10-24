@@ -3,7 +3,7 @@ import csv
 import numpy as np
 
 import pathlib
-folder = str(pathlib.Path(__file__).parent.resolve()) # "examples/plotting_data"
+folder = str(pathlib.Path(__file__).parent.resolve())
 figure_folder = folder + "/../figures"
 
 def latexify():
@@ -48,17 +48,17 @@ alpha = 1.0
 for i in range(len(nb_obs)):
     if i == len(nb_obs)-1 or nb_obs[i+1] < nb_obs[i]:
         stop_idx = i+1
-        # plt.plot(nb_obs[start_idx:stop_idx], adaptive[start_idx:stop_idx],
-        #          linewidth=2, color="royalblue", alpha=alpha)
+        plt.plot(nb_obs[start_idx:stop_idx], adaptive[start_idx:stop_idx],
+                 linewidth=2, color="royalblue", alpha=alpha, label="AdaptiveNLP")
         plt.plot(nb_obs[start_idx:stop_idx], casadi_1[start_idx:stop_idx],
-                 linewidth=2, color="gray", alpha=alpha)
+                 linewidth=2, color="gray", alpha=alpha, label="CasADi Opti 1")
         plt.plot(nb_obs[start_idx:stop_idx], casadi_2[start_idx:stop_idx],
-                 linewidth=2, color="orange", alpha=alpha)
-        plt.plot(nb_obs[start_idx:stop_idx], t_comp_2[start_idx:stop_idx],
-                 linewidth=1, color="orange", alpha=alpha)
+                 linewidth=2, color="orange", alpha=alpha, label="CasADi Opti 2")
+        # plt.plot(nb_obs[start_idx:stop_idx], t_comp_2[start_idx:stop_idx],
+        #          linewidth=1, color="orange", alpha=alpha)
         start_idx=stop_idx
     
-
+plt.legend()
 
 plt.savefig(figure_folder + "/virtual_obstacles_scaling.png", dpi=400)
 

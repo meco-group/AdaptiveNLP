@@ -47,6 +47,9 @@ int main(){
     // create plotter object
     Plotter plotter = Plotter(blocks.getFreeTime(), blocks.get_nx(), 
                               blocks.get_nu());
+    std::string file_path = __FILE__;
+    std::string dir_path = file_path.substr(0, file_path.rfind("/"));
+    plotter.setOutputFolder(dir_path + "/plotting_data/");
     Plotter* plotter_ptr = nullptr;
     plotter_ptr = &plotter;
     for (int i = 0; i < obstacle_x_tot.size(); i++){
@@ -89,7 +92,7 @@ int main(){
     std::vector<int> nb_constraints(max_nb_iterations);
     double total_time_adaptive;
     int nb_iterations_adaptive;
-    // std::cout<<"Starting adaptive approach"<<std::endl;
+    std::cout<<"Starting adaptive approach"<<std::endl;
     helper.performAdaptiveLoop(plotter, start, stop, nx, 
                                nu, obstacle_x, obstacle_y, 
                                obstacle_r, 
@@ -105,7 +108,7 @@ int main(){
     double total_time_casadi_1;
     std::vector<std::vector<std::vector<double>>> formatted_solutions_casadi_1(
         1, std::vector<std::vector<double>>(nx+nu));
-    // std::cout<<"Starting casadi 1 approach"<<std::endl;
+    std::cout<<"Starting casadi 1 approach"<<std::endl;
     helper.solveCompleteNLPCasadi(blocks, plotter, start, stop, nx, nu, 
                                   nb_steps, dt, nb_intervals, obstacle_x, 
                                   obstacle_y, obstacle_r, 
@@ -119,7 +122,7 @@ int main(){
     std::vector<double> timings_casadi_2(max_nb_iterations);
     std::vector<std::vector<std::vector<double>>> formatted_solutions_casadi_2(
         max_nb_iterations, std::vector<std::vector<double>>(nx+nu));
-    // std::cout<<"Starting casadi 2 approach"<<std::endl;
+    std::cout<<"Starting casadi 2 approach"<<std::endl;
     helper.performCasadiLoopReformulation(blocks, plotter, start, stop, nx, nu,
                                           nb_steps, dt, nb_intervals, 
                                           obstacle_x, obstacle_y, obstacle_r,

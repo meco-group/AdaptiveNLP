@@ -159,6 +159,10 @@ class Plotter{
         
         double getMedian(std::vector<double>& v);
 
+        void setOutputFolder(std::string output_folder){
+            output_folder_ = output_folder;
+        }
+
     private:
 
         void get_x(const double* sol, int k);
