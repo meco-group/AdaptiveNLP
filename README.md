@@ -49,18 +49,27 @@ not available and the vehicle has to detect obstacles and avoid
 them. The vehicle also might encounter people to which it
 can only get close if it slows down for safety reasons
 
-<!-- ![alt-text](adaptivenlp/examples/adaptiveCorridorExample/figures/animation/animation.gif) -->
-<!-- ![MPC-animation](https://gitlab.kuleuven.be/meco-projects/adaptivenlp/-/blob/main/examples/adaptiveCorridorExample/figures/animation/animation.gif) -->
-![MPC-animation](examples/adaptiveCorridorExample/figures/animation/animation.gif)
+<!-- ![MPC-animation](examples/adaptiveCorridorExample/figures/animation/animation.gif) -->
+
+<p align="center">
+<img src="examples/adaptiveCorridorExample/figures/animation/animation.gif" width="400">
+</p>
 
 ### Example 2: Moonlander example
 The goal in this example is to land a moonlander as fast
 as possible on the surface of the moon without crashing into
 it. The lander is subject to a lunar gravitational pull and has one thruster to be used to slow down. This problem is solved using an adaptive gridding method to represent the bang-bang solution accurately on a discrete time-grid.
 
-![bang-bang-controls](examples/moonlanderExample/figures/controls.png)
+<!-- ![bang-bang-controls](examples/moonlanderExample/figures/controls.png) -->
 
-![Jacobian-animation](examples/moonlanderExample/figures/sparsities/animation_jac_adaptive.gif)
+<p align="center">
+<img src="examples/moonlanderExample/figures/controls.png" width="400">
+</p>
+
+<!-- ![Jacobian-animation](examples/moonlanderExample/figures/sparsities/animation_jac_adaptive.gif) -->
+<p align="center">
+<img src="examples/moonlanderExample/figures/sparsities/animation_jac_adaptive.gif" width="400">
+</p>
 
 ## License
 TODO
