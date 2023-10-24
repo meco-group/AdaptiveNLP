@@ -50,7 +50,7 @@ them. The vehicle also might encounter people to which it
 can only get close if it slows down for safety reasons
 
 <!-- ![alt-text](adaptivenlp/examples/adaptiveCorridorExample/figures/animation/animation.gif) -->
-![alt-text](https://gitlab.kuleuven.be/meco-projects/adaptivenlp/-/blob/main/examples/adaptiveCorridorExample/figures/animation/animation.gif)
+![alt text](https://gitlab.kuleuven.be/meco-projects/adaptivenlp/-/blob/main/examples/adaptiveCorridorExample/figures/animation/animation.gif)
 
 ### Example 2: Moonlander example
 The goal in this example is to land a moonlander as fast
