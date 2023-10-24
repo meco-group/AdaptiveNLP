@@ -56,3 +56,4 @@ plt.legend([plt.Line2D([], [], color='royalblue', marker='o',
 # plt.show()
 plt.subplots_adjust(bottom=0.3)
 plt.savefig(figure_folder + "/controls.pdf")
+plt.savefig(figure_folder + "/controls.png", dpi=400)
