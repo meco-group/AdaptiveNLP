@@ -52,7 +52,7 @@ can only get close if it slows down for safety reasons
 <!-- ![MPC-animation](examples/adaptiveCorridorExample/figures/animation/animation.gif) -->
 
 <p align="center">
-<img src="examples/adaptiveCorridorExample/figures/animation/animation.gif" width="400">
+<img src="examples/adaptiveCorridorExample/figures/animation/animation.gif" width="600">
 </p>
 
 ### Example 2: Moonlander example
