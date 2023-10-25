@@ -16,6 +16,12 @@ class AdaptiveCorridorHelper{
                                               double r, 
                                               std::vector<double>& sol);
 
+        void getCollidingPoints(double pos_x, double pos_y, double r, 
+                                std::vector<double>& sol,
+                                std::vector<bool>& constraint_added,
+                                std::vector<int>& to_add,
+                                std::vector<int>& to_remove);
+
         std::vector<int> getCollidingPoints(double pos_x, double pos_y, 
                                               double r, 
                                 std::vector<std::vector<double>> formatted_xx);
@@ -52,7 +58,7 @@ class AdaptiveCorridorHelper{
 
         std::vector<double> reduceInitGuess(std::vector<double>& sol);
 
-        std::vector<std::vector<double>> performAdaptiveLoop(bool USE_PLOTTER, 
+        std::vector<std::vector<double>> performAdaptiveLoop(
             AdaptiveNLP& adaptiveNLP, Plotter& plotter, 
             std::vector<double> x0, std::vector<double>& corridor_1, 
             std::vector<double>& corridor_2, int nx, int nu, int nb_steps, 
@@ -63,7 +69,7 @@ class AdaptiveCorridorHelper{
             std::vector<double>& low_speed_pos_y, 
             std::vector<double>& low_speed_r);
 
-        std::vector<std::vector<double>> performCasadiLoop(bool USE_PLOTTER, 
+        std::vector<std::vector<double>> performCasadiLoop(
             BuildingBlocks& blocks, Plotter& plotter, 
             std::vector<double> x0, std::vector<double>& corridor_1, 
             std::vector<double>& corridor_2, int nx, int nu, int nb_steps, 
@@ -75,7 +81,7 @@ class AdaptiveCorridorHelper{
             std::vector<double>& low_speed_r);
 
         std::vector<std::vector<double>> performCasadiLoopReformulation(
-            bool USE_PLOTTER, BuildingBlocks& blocks, Plotter& plotter, 
+            BuildingBlocks& blocks, Plotter& plotter, 
             std::vector<double> x0, std::vector<double>& corridor_1, 
             std::vector<double>& corridor_2, int nx, int nu, int nb_steps, 
             int nb_iterations, double dt, double T, int nb_intervals, 
@@ -106,6 +112,9 @@ class AdaptiveCorridorHelper{
         std::vector<double> xk_;
         std::vector<double> uk_;
         std::vector<int> all_;
+
+        std::vector<std::vector<bool>> obs_constraint_added_;
+        std::vector<std::vector<bool>> low_constraint_added_;
 };
 
 #endif

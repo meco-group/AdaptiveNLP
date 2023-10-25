@@ -57,18 +57,19 @@ int main(){
     std::vector<std::vector<int>> hess_rows_casadi = {};
     std::vector<std::vector<int>> hess_cols_casadi = {};
 
-    int nb_runs = 1;
+    int nb_runs = 100;
 
+    cout<<endl<<endl<<"ADAPTIVE"<<endl;
     for (int counter = 0; counter < nb_runs; counter++){
-        cout<<endl<<endl<<"ADAPTIVE"<<endl;
         helper.performAdaptiveLoop(blocks, T, Nmax, tolerance, 
                                    t_solve_adaptive, t_err_adaptive, 
                                    t_update_adaptive, jac_rows_adaptive, 
                                    jac_cols_adaptive, hess_rows_adaptive,
                                    hess_cols_adaptive, counter==0, 
                                    max_nb_refinements, print_level);
-
-        cout<<endl<<endl<<"CASADI"<<endl;
+    }
+    cout<<endl<<endl<<"CASADI"<<endl;
+    for (int counter = 0; counter < nb_runs; counter++){
         helper.performCasadiLoop(blocks, T, tolerance, t_solve_casadi, 
                                 t_err_casadi, t_update_casadi, 
                                 jac_rows_casadi, jac_cols_casadi, 

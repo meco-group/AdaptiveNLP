@@ -265,18 +265,18 @@ void MoonlanderHelper::performAdaptiveLoop(BuildingBlocks& blocks, double T,
         }
     }
 
-    std::cout<<"Convergence status:     "<<converged<<endl;
-    std::cout<<"number of iterations:   "<<iteration_counter<<endl;
+    // std::cout<<"Convergence status:     "<<converged<<endl;
+    // std::cout<<"number of iterations:   "<<iteration_counter<<endl;
 
-    std::cout<<"solving time:           "<<
-        std::accumulate(solving_times.begin(), solving_times.end(), 0.0);
-    std::cout<<"   ("<<solving_times<<")"<<endl;
-    std::cout<<"error computation time: "<<
-        std::accumulate(err_comp_times.begin(), err_comp_times.end(), 0.0);
-    std::cout<<"   ("<<err_comp_times<<")"<<endl;
-    std::cout<<"updating time:          "<<
-        std::accumulate(updating_times.begin(), updating_times.end(), 0.0);
-    std::cout<<"   ("<<updating_times<<")"<<endl<<endl<<endl;
+    // std::cout<<"solving time:           "<<
+    //     std::accumulate(solving_times.begin(), solving_times.end(), 0.0);
+    // std::cout<<"   ("<<solving_times<<")"<<endl;
+    // std::cout<<"error computation time: "<<
+    //     std::accumulate(err_comp_times.begin(), err_comp_times.end(), 0.0);
+    // std::cout<<"   ("<<err_comp_times<<")"<<endl;
+    // std::cout<<"updating time:          "<<
+    //     std::accumulate(updating_times.begin(), updating_times.end(), 0.0);
+    // std::cout<<"   ("<<updating_times<<")"<<endl<<endl<<endl;
 
     plotter.writeControlsToFile(&sol[0]);
 }
@@ -422,14 +422,19 @@ void MoonlanderHelper::performCasadiLoop(BuildingBlocks& blocks, double T,
         }
 
         // set parameters
-        opti.solver("ipopt", {{"print_time", false}, {"record_time", true}}, {{"print_level", print_level}});
+        opti.solver("ipopt", {{"print_time", true}, {"record_time", true}}, {{"print_level", print_level}});
         auto stop = high_resolution_clock::now();
         updating_times.push_back(double(
             duration_cast<microseconds>(stop-start).count())/(1.0e3)); 
 
         // solve problem
+        start = high_resolution_clock::now();
         OptiSol sol_casadi = opti.solve();
+        stop = high_resolution_clock::now();
         solving_times.push_back(1000*double(sol_casadi.stats()["t_wall_total"]));
+        updating_times[updating_times.size()-1] +=
+            double(duration_cast<nanoseconds>(stop-start).count())*1.0e-6 -
+            1000*double(sol_casadi.stats()["t_wall_total"]);
 
         if (store_sparsities){
             getSparsities(opti, jac_row[iteration_counter], 
@@ -564,18 +569,18 @@ void MoonlanderHelper::performCasadiLoop(BuildingBlocks& blocks, double T,
 
     }
 
-    std::cout<<"Convergence status:     "<<converged<<endl;
-    std::cout<<"number of iterations:   "<<iteration_counter<<endl;
+    // std::cout<<"Convergence status:     "<<converged<<endl;
+    // std::cout<<"number of iterations:   "<<iteration_counter<<endl;
 
-    std::cout<<"solving time:           "<<
-        std::accumulate(solving_times.begin(), solving_times.end(), 0.0);
-    std::cout<<"   ("<<solving_times<<")"<<endl;
-    std::cout<<"error computation time: "<<
-        std::accumulate(err_comp_times.begin(), err_comp_times.end(), 0.0);
-    std::cout<<"   ("<<err_comp_times<<")"<<endl;
-    std::cout<<"updating time:          "<<
-        std::accumulate(updating_times.begin(), updating_times.end(), 0.0);
-    std::cout<<"   ("<<updating_times<<")"<<endl;
+    // std::cout<<"solving time:           "<<
+    //     std::accumulate(solving_times.begin(), solving_times.end(), 0.0);
+    // std::cout<<"   ("<<solving_times<<")"<<endl;
+    // std::cout<<"error computation time: "<<
+    //     std::accumulate(err_comp_times.begin(), err_comp_times.end(), 0.0);
+    // std::cout<<"   ("<<err_comp_times<<")"<<endl;
+    // std::cout<<"updating time:          "<<
+    //     std::accumulate(updating_times.begin(), updating_times.end(), 0.0);
+    // std::cout<<"   ("<<updating_times<<")"<<endl;
 }
 
 void MoonlanderHelper::writeToFile(std::vector<double>& solving_times_adaptive,
