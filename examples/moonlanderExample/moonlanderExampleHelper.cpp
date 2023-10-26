@@ -147,6 +147,8 @@ void MoonlanderHelper::performAdaptiveLoop(BuildingBlocks& blocks, double T,
                     next_ind, time_from_ind);
         plotter.formatSolution(sol, formatted_xx, formatted_uu);
 
+        plotter.writeControlsToFile(&sol[0], iteration_counter);
+
         /////////////////////////////
         // compute error estimates //
         /////////////////////////////

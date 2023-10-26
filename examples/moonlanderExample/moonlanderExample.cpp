@@ -57,7 +57,7 @@ int main(){
     std::vector<std::vector<int>> hess_rows_casadi = {};
     std::vector<std::vector<int>> hess_cols_casadi = {};
 
-    int nb_runs = 100;
+    int nb_runs = 1;
 
     cout<<endl<<endl<<"ADAPTIVE"<<endl;
     for (int counter = 0; counter < nb_runs; counter++){

@@ -27,8 +27,9 @@ class Plotter{
         // void plotControls(const double* sol);
         // void plotControls(std::vector<std::vector<double>>& uu);
         
-        void writeControlsToFile(const double* sol);
-        void writeControlsToFile(std::vector<std::vector<double>>& uu);
+        void writeControlsToFile(const double* sol, int file_nb = -1);
+        void writeControlsToFile(std::vector<std::vector<double>>& uu, 
+                                 int file_nb = -1);
 
         // void plotTravelledTrajectory(std::vector<std::vector<double>> x0s,
         //                              std::string c, int frame_nb);

@@ -140,7 +140,7 @@ void Plotter::update(int N, int final_ind,
 //     plotter_count_++;
 // }
 
-void Plotter::writeControlsToFile(const double* sol){
+void Plotter::writeControlsToFile(const double* sol, int file_nb){
     std::vector<std::vector<double>> uu(nu_, std::vector<double>(N_, 0.0));
     int k = 0;
     for (int i = 0; i < N_; i++){
@@ -150,11 +150,18 @@ void Plotter::writeControlsToFile(const double* sol){
         }
         k = next_ind_[k].value();
     }
-    return writeControlsToFile(uu);
+    return writeControlsToFile(uu, file_nb);
 };
 
-void Plotter::writeControlsToFile(std::vector<std::vector<double>>& uu){
-    std::ofstream file(output_folder_ + "controls.csv");
+void Plotter::writeControlsToFile(std::vector<std::vector<double>>& uu, 
+                                  int file_nb){
+    std::string file_name;
+    if (file_nb >= 0){
+        file_name = "controls_" + std::to_string(file_nb) + ".csv";
+    } else {
+        file_name = "controls.csv";
+    }
+    std::ofstream file(output_folder_ + file_name);
     if (file.is_open()){
         file<<"t";
         for (int i = 0; i < nu_; i++){
