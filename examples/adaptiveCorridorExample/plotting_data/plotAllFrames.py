@@ -24,7 +24,10 @@ def latexify():
 
     plt.rcParams.update(params)
 
-latexify()
+try:
+    latexify()
+except:
+    print("Unable to latexify the figure.")
 
 #####################
 ### read all data ###
@@ -47,10 +50,6 @@ with open(folder+"/circles.csv") as file:
     
     for row in csv_reader:
         visible_constraints.append([bool(int(v)) for v in row])
-# print("circles_x: ", circles_x)
-# print("circles_y: ", circles_y)
-# print("circles_r: ", circles_r)
-# print("circles_colors: ", circles_colors)
 
 # read "corridors.csv"
 corridors = []
@@ -80,11 +79,6 @@ with open(folder+"/results_adaptive.csv") as file:
         for j in range(4):
             nb_constraints_specific_adaptive[j].append(float(row[3+j]))
         x0s_adaptive.append([float(row[i]) for i in range(7,7+4)])
-# print(timings_adaptive)
-# print(total_timings_adaptive)
-# print(nb_constraints_adaptive)
-# print(nb_constraints_specific_adaptive)
-# print(x0s_adaptive)
 
 # read "results_ref.csv"
 timings_ref = []
@@ -162,6 +156,9 @@ def plotTravelledTrajectory(ax, x0s, c, frame_nb):
 def plotCircle(ax, x, y, r, color, alpha=1):
     ax.add_patch(plt.Circle([x, y], r, color=color, alpha=alpha))
 
+def plotCircleEdge(ax, x, y, r, color, alpha=1):
+    ax.add_patch(plt.Circle([x, y], r, color=color, fill=False, alpha=alpha))
+
 def plotCircleMargins(ax, xx, yy, rr, cc, v):
     for i in range(len(xx)):
         if v[i]:
@@ -226,8 +223,10 @@ for frame_nb in range(len(timings_adaptive)):
     # plot obstacles and low-speed zones
     plotCircleMargins(axs[0], circles_x, circles_y, circles_r, circles_colors, 
                 visible_constraints[frame_nb])
-    plotCircle(axs[0], x0s_adaptive[frame_nb][0], x0s_adaptive[frame_nb][1], 
-               viewing_radius, [1.0,1.0,1.0], alpha=0.5)
+    # plotCircle(axs[0], x0s_adaptive[frame_nb][0], x0s_adaptive[frame_nb][1], 
+    #            viewing_radius, [1.0,1.0,1.0], alpha=0.5) # doesn't work well in GIFs
+    plotCircleEdge(axs[0], x0s_adaptive[frame_nb][0], 
+                   x0s_adaptive[frame_nb][1], viewing_radius, [1.0,1.0,1.0])
     plotCircles(axs[0], circles_x, circles_y, circles_r, circles_colors, 
                 visible_constraints[frame_nb])
 

@@ -24,7 +24,10 @@ def latexify():
 
     plt.rcParams.update(params)
 
-latexify()
+try:
+    latexify()
+except:
+    print("Unable to latexify the figure.")
 
 # read jacobian sparsities
 jac_rows_adaptive = [[]]

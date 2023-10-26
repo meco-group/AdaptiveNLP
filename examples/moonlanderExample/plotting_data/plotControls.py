@@ -22,7 +22,10 @@ def latexify():
 
     plt.rcParams.update(params)
 
-latexify()
+try:
+    latexify()
+except:
+    print("Unable to latexify the figure.")
 
 tt = []
 uu = []

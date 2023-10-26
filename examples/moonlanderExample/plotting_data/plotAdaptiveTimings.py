@@ -23,7 +23,10 @@ def latexify():
 
     plt.rcParams.update(params)
 
-latexify()
+try:
+    latexify()
+except:
+    print("Unable to latexify the figure.")
 
 t_solve_adaptive = []
 t_err_adaptive = []
