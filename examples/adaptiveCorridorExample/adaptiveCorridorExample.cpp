@@ -11,7 +11,7 @@ using namespace std;
 int main(){
     // if set to false, the MPC example is ran just once,
     // if set to true, the MPC example is ran for different values of N
-    const bool COMPUTE_SCALING_RESULTS = true;
+    const bool COMPUTE_SCALING_RESULTS = false;
 
     //////////////////////////////////////
     // general definition of parameters //

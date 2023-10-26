@@ -5,6 +5,7 @@
 #include "plotter.hpp"
 #include <optional>
 
+// Helper object to perform the MPC-loop for the different cases
 class AdaptiveCorridorHelper{
     public:
         AdaptiveCorridorHelper(AdaptiveNLP& nlp, double view_radius,
@@ -12,19 +13,11 @@ class AdaptiveCorridorHelper{
 
         void updateNLPVars();
 
-        std::vector<int> getCollidingPoints(double pos_x, double pos_y, 
-                                              double r, 
-                                              std::vector<double>& sol);
-
         void getCollidingPoints(double pos_x, double pos_y, double r, 
                                 std::vector<double>& sol,
                                 std::vector<bool>& constraint_added,
                                 std::vector<int>& to_add,
                                 std::vector<int>& to_remove);
-
-        std::vector<int> getCollidingPoints(double pos_x, double pos_y, 
-                                              double r, 
-                                std::vector<std::vector<double>> formatted_xx);
 
         std::vector<int> getLeavingPoints(std::vector<double>& corridor, 
                                             std::vector<double>& sol);
@@ -55,8 +48,6 @@ class AdaptiveCorridorHelper{
 
         void appendInitGuess(std::vector<double>& sol, 
                              std::vector<double>& init_guess, int nb_steps);
-
-        std::vector<double> reduceInitGuess(std::vector<double>& sol);
 
         std::vector<std::vector<double>> performAdaptiveLoop(
             AdaptiveNLP& adaptiveNLP, Plotter& plotter, 

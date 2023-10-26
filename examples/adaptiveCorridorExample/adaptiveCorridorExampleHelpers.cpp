@@ -33,26 +33,6 @@ void AdaptiveCorridorHelper::updateNLPVars(){
     }
 };
 
-
-std::vector<int> AdaptiveCorridorHelper::getCollidingPoints(double pos_x, 
-                                                    double pos_y, double r, 
-                                                    std::vector<double>& sol){
-    std::vector<int> k_vals;
-    double margin = 4.0;
-
-    for (int k = 0; k < N_+1; k++){
-        if (k != final_ind_){
-            get_x(sol, k);
-            if (std::pow(xk_[0] - pos_x, 2) + 
-                    std::pow(xk_[1] - pos_y, 2) <= 
-                        std::pow(r+margin, 2)){
-                k_vals.push_back(k);
-            }
-        }
-    }
-    return k_vals;
-};
-
 void AdaptiveCorridorHelper::getCollidingPoints(double pos_x, double pos_y, 
                                             double r, std::vector<double>& sol,
                                             std::vector<bool>& constraint_added,
@@ -79,22 +59,6 @@ void AdaptiveCorridorHelper::getCollidingPoints(double pos_x, double pos_y,
             }
         }
     }
-};
-
-std::vector<int> AdaptiveCorridorHelper::getCollidingPoints(double pos_x, 
-                                double pos_y, double r, 
-                                std::vector<std::vector<double>> formatted_xx){
-    std::vector<int> k_vals;
-    double margin = 4.0;
-
-    for (int k = 0; k < formatted_xx[0].size()-1; k++){
-        if (std::pow(formatted_xx[0][k] - pos_x, 2) + 
-                std::pow(formatted_xx[1][k] - pos_y, 2) <= 
-                    std::pow(r+margin, 2)){
-            k_vals.push_back(k);
-        }
-    }
-    return k_vals;
 };
 
 std::vector<int> AdaptiveCorridorHelper::getLeavingPoints(
@@ -254,36 +218,6 @@ void AdaptiveCorridorHelper::appendInitGuess(std::vector<double>& sol,
         }
     }
 };
-
-std::vector<double> AdaptiveCorridorHelper::reduceInitGuess(
-                                                    std::vector<double>& sol){
-    std::vector<double> res(nx_*(N_+1) + nu_*N_ + free_time_, 0.0);
-
-    int k = 0;
-    int next_k = next_index_[k].value();
-    while (next_k != final_ind_){
-        get_x(sol, next_k);
-        std::copy(xk_.begin(), xk_.end(), res.begin() + 
-            (nx_+nu_)*k - nu_*(k > final_ind_));
-        get_u(sol, next_k);
-        std::copy(uk_.begin(), uk_.end(), res.begin() + 
-            (nx_+nu_)*k + nx_ - nu_*(k > final_ind_));
-        k = next_k;
-        next_k = next_index_[next_k].value();
-    }
-
-    get_x(sol, final_ind_);
-    std::copy(xk_.begin(), xk_.end(), res.begin() + 
-        (nx_+nu_)*k - nu_*(k > final_ind_));
-    get_u(sol, k);
-    std::copy(uk_.begin(), uk_.end(), res.begin() + 
-        (nx_+nu_)*k + nx_ - nu_*(k > final_ind_));
-
-    std::copy(xk_.begin(), xk_.end(), res.begin() + 
-        (nx_+nu_)*final_ind_ - nu_*(final_ind_ > final_ind_));
-
-    return res;
-}
 
 std::vector<std::vector<double>> AdaptiveCorridorHelper::performAdaptiveLoop(
         AdaptiveNLP& adaptiveNLP, Plotter& plotter, std::vector<double> x0, 

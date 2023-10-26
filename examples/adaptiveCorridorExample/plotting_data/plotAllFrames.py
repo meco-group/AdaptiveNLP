@@ -159,8 +159,8 @@ def plotTravelledTrajectory(ax, x0s, c, frame_nb):
     ax.plot([x0s[i][0] for i in range(frame_nb+1)], 
             [x0s[i][1] for i in range(frame_nb+1)], color=c)
 
-def plotCircle(ax, x, y, r, color):
-    ax.add_patch(plt.Circle([x, y], r, color=color))
+def plotCircle(ax, x, y, r, color, alpha=1):
+    ax.add_patch(plt.Circle([x, y], r, color=color, alpha=alpha))
 
 def plotCircleMargins(ax, xx, yy, rr, cc, v):
     for i in range(len(xx)):
@@ -226,6 +226,8 @@ for frame_nb in range(len(timings_adaptive)):
     # plot obstacles and low-speed zones
     plotCircleMargins(axs[0], circles_x, circles_y, circles_r, circles_colors, 
                 visible_constraints[frame_nb])
+    plotCircle(axs[0], x0s_adaptive[frame_nb][0], x0s_adaptive[frame_nb][1], 
+               viewing_radius, [1.0,1.0,1.0], alpha=0.5)
     plotCircles(axs[0], circles_x, circles_y, circles_r, circles_colors, 
                 visible_constraints[frame_nb])
 

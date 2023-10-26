@@ -67,6 +67,8 @@ void MoonlanderHelper::performAdaptiveLoop(BuildingBlocks& blocks, double T,
     SX p = SX::sym("p", 0, 0);
     Function fd = Function("fd", {xk, uk}, {vertcat(xk(1), -3.8+uk)});
     errorEstimator estimator = errorEstimator(nx, nu, fd);
+
+    // perpare loop
     std::vector<std::vector<double>> formatted_xx;
     std::vector<std::vector<double>> formatted_uu;
     double max_err = 0.0;
@@ -84,7 +86,6 @@ void MoonlanderHelper::performAdaptiveLoop(BuildingBlocks& blocks, double T,
     std::vector<std::optional<int>> nb_g_d_old = adaptiveNLP.getNbSteps();
     std::vector<std::optional<double>> time_from_ind_old = 
         adaptiveNLP.getTimeFromIndex();
-    
 
     // timing containers
     std::vector<double> sol;
@@ -96,7 +97,9 @@ void MoonlanderHelper::performAdaptiveLoop(BuildingBlocks& blocks, double T,
         hess_col = {};
     }
 
-    // adaptive approach
+    ///////////////////////////////
+    // perform adaptive approach //
+    ///////////////////////////////
     while (!converged){
         if (store_sparsities){
             jac_row.push_back(adaptiveNLP.getJacRows());
@@ -108,6 +111,7 @@ void MoonlanderHelper::performAdaptiveLoop(BuildingBlocks& blocks, double T,
         auto start = high_resolution_clock::now();
         // set initial guess
         if (iteration_counter > 0){
+            // evaluate previous solution on new grid
             init_guess = evaluateSolOnNewGrid(sol[0], 
                                               adaptiveNLP.getFinalInd(),
                                               next_ind_old,
@@ -119,6 +123,7 @@ void MoonlanderHelper::performAdaptiveLoop(BuildingBlocks& blocks, double T,
                                               formatted_xx, formatted_uu);
 
         } else {
+            // no previous solution - use 0 initial guess
             init_guess = std::vector<double>(1 + nx*(adaptiveNLP.getN()+1) + 
                                              nu*adaptiveNLP.getN(), 0.0);
             init_guess[0] = blocks.get_t_init();
@@ -127,6 +132,9 @@ void MoonlanderHelper::performAdaptiveLoop(BuildingBlocks& blocks, double T,
         updating_times.push_back(
             double(duration_cast<microseconds>(stop-start).count())/(1.0e3));
 
+        ///////////////
+        // Solve NLP //
+        ///////////////
         adaptiveNLP.solveNlp({}, time, init_guess);
         solving_times.push_back(time);
         sol = adaptiveNLP.getSolution();
@@ -139,15 +147,18 @@ void MoonlanderHelper::performAdaptiveLoop(BuildingBlocks& blocks, double T,
                     next_ind, time_from_ind);
         plotter.formatSolution(sol, formatted_xx, formatted_uu);
 
-        // compute error estimates
+        /////////////////////////////
+        // compute error estimates //
+        /////////////////////////////
         start = high_resolution_clock::now();
         error_estimates = {};
         int offset = 0;
         k_offset = 0;
         int curr_interval = 0;
         max_err = 0.0;
+        // loop over all intervals
         while (k_offset != adaptiveNLP.getFinalInd()){
-
+            // get state and control values in the current interval
             std::vector<std::vector<double>> xx1(
                 adaptiveNLP.getNbSteps(k_offset), std::vector<double>(nx));
             std::vector<std::vector<double>> uu1(
@@ -163,6 +174,7 @@ void MoonlanderHelper::performAdaptiveLoop(BuildingBlocks& blocks, double T,
                 }
             }
 
+            // get the time grid for this interval (mapped onto [0, 1])
             offset += adaptiveNLP.getNbSteps(k_offset)-1;
             tau = std::vector<double>(adaptiveNLP.getNbSteps(k_offset));
             tau[0] = 0;
@@ -172,11 +184,13 @@ void MoonlanderHelper::performAdaptiveLoop(BuildingBlocks& blocks, double T,
             }
             double temp = sol[0]*adaptiveNLP.getIntervalLength(k_offset);
 
+            // compute the error estimate for this interval
             double err = estimator.getEstimate(
                 temp, tau, xx1, uu1);
             max_err = std::max(max_err, err);
             error_estimates.push_back(err);
 
+            // switch to the next interval
             int nb_to_traverse = adaptiveNLP.getNbSteps(k_offset)-1; 
             for (int i = 0; i < nb_to_traverse; i++){
                 k_offset = adaptiveNLP.getNext(k_offset);
@@ -188,8 +202,11 @@ void MoonlanderHelper::performAdaptiveLoop(BuildingBlocks& blocks, double T,
         time = double(duration_cast<microseconds>(stop-start).count())/(1.0e3);
         err_comp_times.push_back(time);
 
-        // make changes to NLP
+        /////////////////////////////////
+        // refine time grid of the NLP //
+        /////////////////////////////////
         start = high_resolution_clock::now();
+        // stop if no refinements are needed
         if (max_err <= tolerance){
             stop = high_resolution_clock::now();
             time = double(duration_cast<microseconds>(stop-start).count())/
@@ -199,9 +216,12 @@ void MoonlanderHelper::performAdaptiveLoop(BuildingBlocks& blocks, double T,
         } else {
             k_offset = 0;
             curr_interval = 0;
+            // loop over all intervals in the current time-grid
             while (k_offset != adaptiveNLP.getFinalInd()){
                 new_nb_intervals = 1;
+                // for every interval that needs refinement
                 if (error_estimates[curr_interval] > tolerance){
+                    // get the new number of desired collocation
                     new_nb_collocation_pts = 
                         adaptiveNLP.getNbSteps(k_offset) +
                         std::ceil(
@@ -243,6 +263,7 @@ void MoonlanderHelper::performAdaptiveLoop(BuildingBlocks& blocks, double T,
                             std::vector<int>(new_nb_intervals, 4), tt_local);
                     }
                 }
+                // // get the new number of desired collocationo to the next interval
                 curr_interval++;
                 for (int j = 0; j < new_nb_intervals; j++){
                     int nb_steps_local = adaptiveNLP.getNbSteps(k_offset);
@@ -251,6 +272,8 @@ void MoonlanderHelper::performAdaptiveLoop(BuildingBlocks& blocks, double T,
                     }
                 }
             }
+
+            // clear out the bookkeeping
             adaptiveNLP.clearStructuralZeros();
 
             stop = high_resolution_clock::now();
@@ -264,19 +287,6 @@ void MoonlanderHelper::performAdaptiveLoop(BuildingBlocks& blocks, double T,
             }
         }
     }
-
-    // std::cout<<"Convergence status:     "<<converged<<endl;
-    // std::cout<<"number of iterations:   "<<iteration_counter<<endl;
-
-    // std::cout<<"solving time:           "<<
-    //     std::accumulate(solving_times.begin(), solving_times.end(), 0.0);
-    // std::cout<<"   ("<<solving_times<<")"<<endl;
-    // std::cout<<"error computation time: "<<
-    //     std::accumulate(err_comp_times.begin(), err_comp_times.end(), 0.0);
-    // std::cout<<"   ("<<err_comp_times<<")"<<endl;
-    // std::cout<<"updating time:          "<<
-    //     std::accumulate(updating_times.begin(), updating_times.end(), 0.0);
-    // std::cout<<"   ("<<updating_times<<")"<<endl<<endl<<endl;
 
     plotter.writeControlsToFile(&sol[0]);
 }
@@ -335,7 +345,9 @@ void MoonlanderHelper::performCasadiLoop(BuildingBlocks& blocks, double T,
         hess_col = {};
     }
 
-
+    //////////////////////////////////
+    // perform CasADi Opti approach //
+    //////////////////////////////////
     while (!converged){
         if (store_sparsities){
             jac_row.push_back({});
@@ -422,12 +434,15 @@ void MoonlanderHelper::performCasadiLoop(BuildingBlocks& blocks, double T,
         }
 
         // set parameters
-        opti.solver("ipopt", {{"print_time", true}, {"record_time", true}}, {{"print_level", print_level}});
+        opti.solver("ipopt", {{"print_time", true}, {"record_time", true}}, 
+                    {{"print_level", print_level}});
         auto stop = high_resolution_clock::now();
         updating_times.push_back(double(
             duration_cast<microseconds>(stop-start).count())/(1.0e3)); 
 
-        // solve problem
+        ///////////////
+        // Solve NLP //
+        ///////////////
         start = high_resolution_clock::now();
         OptiSol sol_casadi = opti.solve();
         stop = high_resolution_clock::now();
@@ -460,15 +475,19 @@ void MoonlanderHelper::performCasadiLoop(BuildingBlocks& blocks, double T,
             }
         }
 
-        // compute error estimates
+        /////////////////////////////
+        // compute error estimates //
+        /////////////////////////////
         start = high_resolution_clock::now();
         error_estimates = {};
         int offset = 0;
         max_err = 0.0;
+        // loop over all intervals
         for (int curr_interval = 0; curr_interval < nb_steps.size(); 
                 curr_interval++){
             int nb_steps_local = nb_steps[curr_interval];
             
+            // get state and control values in the current interval
             std::vector<std::vector<double>> xx1(
                 nb_steps_local, std::vector<double>(nx));
             std::vector<std::vector<double>> uu1(
@@ -484,6 +503,7 @@ void MoonlanderHelper::performCasadiLoop(BuildingBlocks& blocks, double T,
                 }
             }
 
+            // get the time grid for this interval (mapped onto [0, 1])
             offset += nb_steps_local-1;
             tau = std::vector<double>(nb_steps_local);
             tau[0] = 0;
@@ -493,6 +513,7 @@ void MoonlanderHelper::performCasadiLoop(BuildingBlocks& blocks, double T,
             }
             double temp = t_double*interval_lengths[curr_interval];
 
+            // compute the error estimate for this interval
             double err = estimator.getEstimate(
                 temp, tau, xx1, uu1);
             max_err = std::max(max_err, err);
@@ -502,10 +523,13 @@ void MoonlanderHelper::performCasadiLoop(BuildingBlocks& blocks, double T,
         time = double(duration_cast<microseconds>(stop-start).count())/(1.0e3);
         err_comp_times.push_back(time);
 
-        // make changes to NLP
+        /////////////////////////////////
+        // refine time grid of the NLP //
+        /////////////////////////////////
         old_grid = grid;
         nb_steps_old = nb_steps;
         start = high_resolution_clock::now();
+        // stop if no refinements are needed
         if (max_err <= tolerance){
             stop = high_resolution_clock::now();
             time = double(duration_cast<microseconds>(stop-start).count())/
@@ -516,10 +540,13 @@ void MoonlanderHelper::performCasadiLoop(BuildingBlocks& blocks, double T,
             std::vector<int> nb_steps_new = {};
             std::vector<double> interval_lengths_new = {};
 
+            // loop over all intervals in the current time-grid
             for (int curr_interval = 0; curr_interval < nb_steps.size();
                     curr_interval++){
                 new_nb_intervals = 1;
+                // for every interval that needs refinement
                 if (error_estimates[curr_interval] > tolerance){
+                    // get the new number of desired collocation
                     new_nb_collocation_pts = 
                         nb_steps[curr_interval] +
                         std::ceil(
@@ -568,19 +595,6 @@ void MoonlanderHelper::performCasadiLoop(BuildingBlocks& blocks, double T,
         }
 
     }
-
-    // std::cout<<"Convergence status:     "<<converged<<endl;
-    // std::cout<<"number of iterations:   "<<iteration_counter<<endl;
-
-    // std::cout<<"solving time:           "<<
-    //     std::accumulate(solving_times.begin(), solving_times.end(), 0.0);
-    // std::cout<<"   ("<<solving_times<<")"<<endl;
-    // std::cout<<"error computation time: "<<
-    //     std::accumulate(err_comp_times.begin(), err_comp_times.end(), 0.0);
-    // std::cout<<"   ("<<err_comp_times<<")"<<endl;
-    // std::cout<<"updating time:          "<<
-    //     std::accumulate(updating_times.begin(), updating_times.end(), 0.0);
-    // std::cout<<"   ("<<updating_times<<")"<<endl;
 }
 
 void MoonlanderHelper::writeToFile(std::vector<double>& solving_times_adaptive,
@@ -688,7 +702,9 @@ std::vector<std::vector<double>> MoonlanderHelper::evaluateSolOnNewGrid(
 
     int offset = 0;
     double interval_edge = 0.0;
+    // for every time-step in the old time-grid
     for (int k = 0; k < nb_steps_old.size(); k++){
+        // get the states and controls in the current interval 
         xx_local = std::vector<std::vector<double>>(nx,
                         std::vector<double>(nb_steps_old[k]));
         uu_local = std::vector<std::vector<double>>(nu,
@@ -704,6 +720,7 @@ std::vector<std::vector<double>> MoonlanderHelper::evaluateSolOnNewGrid(
             }
         }
         
+        // get the time-grid of the current interval
         tau_local = std::vector<double>(nb_steps_old[k]-1);
         for (int i = 0; i < tau_local.size(); i++){
             tau_local[i] = old_grid[offset + i];
@@ -711,8 +728,12 @@ std::vector<std::vector<double>> MoonlanderHelper::evaluateSolOnNewGrid(
         interval_edge = tau_local[tau_local.size()-1];
         offset += nb_steps_old[k]-1;
 
+        // construct interpolating polynomials for states and controls
         constructInterpolants(tau_local, xx_local, uu_local);
 
+        // for all points of the new time-grid that still lie in the current
+        // interval of the old grid, evaluate the interpolant constructed for
+        // the current interval
         while (new_grid[new_k_ptr] <= interval_edge){
             for (int i = 0; i < nx; i++){
                 res[i][new_k_ptr] = px[i](new_grid[new_k_ptr]);
@@ -742,6 +763,7 @@ std::vector<double> MoonlanderHelper::evaluateSolOnNewGrid(double t_old,
     std::vector<std::vector<double>> uu_local;
     std::vector<double> tau_local;
 
+    // get the number of time-steps in the old grid
     int N_old = 0;
     int ptr = 0;
     while(next_ind_old[ptr].has_value()){
@@ -749,6 +771,7 @@ std::vector<double> MoonlanderHelper::evaluateSolOnNewGrid(double t_old,
         ptr = next_ind_old[ptr].value();
     }
 
+    // get the number of time-steps in the new grid
     int N_new = 0;
     ptr = 0;
     while(next_ind_new[ptr].has_value()){
@@ -756,6 +779,7 @@ std::vector<double> MoonlanderHelper::evaluateSolOnNewGrid(double t_old,
         ptr = next_ind_new[ptr].value();
     }
 
+    // prepare the solution
     std::vector<double> res(1 + nx*(N_new+1) + nu*N_new);
     res[0] = t_old;
 
@@ -764,7 +788,9 @@ std::vector<double> MoonlanderHelper::evaluateSolOnNewGrid(double t_old,
     int offset = 0;
     double interval_edge = 0.0;
     int k = 0;
+    // for every time-step in the old time-grid
     while (next_ind_old[k].has_value()){
+        // get the states and controls in the current interval 
         xx_local = std::vector<std::vector<double>>(nx,
                         std::vector<double>(nb_g_d_old[k].value()));
         uu_local = std::vector<std::vector<double>>(nu,
@@ -780,6 +806,7 @@ std::vector<double> MoonlanderHelper::evaluateSolOnNewGrid(double t_old,
             }
         }
         
+        // get the time-grid of the current interval
         tau_local = std::vector<double>(nb_g_d_old[k].value()-1);
         int temp = k;
         for (int i = 0; i < nb_g_d_old[k].value()-1; i++){
@@ -789,8 +816,12 @@ std::vector<double> MoonlanderHelper::evaluateSolOnNewGrid(double t_old,
         interval_edge = tau_local[tau_local.size()-1];
         offset += nb_g_d_old[k].value()-1;
 
+        // construct interpolating polynomials for states and controls
         constructInterpolants(tau_local, xx_local, uu_local);
 
+        // for all points of the new time-grid that still lie in the current
+        // interval of the old grid, evaluate the interpolant constructed for
+        // the current interval
         while (time_from_ind_new[new_k_ptr].value() <= interval_edge){
             for (int i = 0; i < nx; i++){
                 res[1+(nx+nu)*new_k_ptr-nu*(new_k_ptr > final_ind)+i] = 
@@ -803,6 +834,7 @@ std::vector<double> MoonlanderHelper::evaluateSolOnNewGrid(double t_old,
             new_k_ptr = next_ind_new[new_k_ptr].value();
         }
 
+        // go to the next interval
         int nb_steps = nb_g_d_old[k].value();
         for (int i = 0; i < nb_steps-1; i++){
             k = next_ind_old[k].value();
@@ -871,9 +903,6 @@ void MoonlanderHelper::getSparsities(Opti opti, std::vector<int>& jac_row,
                                      std::vector<int>& hess_col){
     MX J = jacobian(opti.g(), opti.x());
     Sparsity sp = J.sparsity();
-    // // Function J = opti.advanced().get_solver().get_function("nlp_jac_g");
-    // Sparsity sp = J.sparsity_out(1);
-
     for (int i = 0; i < sp.size1(); i++){
         for (int j = 0; j < sp.size2(); j++){
             if (sp.has_nz(i,j)){
@@ -885,9 +914,6 @@ void MoonlanderHelper::getSparsities(Opti opti, std::vector<int>& jac_row,
 
     MX H = hessian(opti.f() + mtimes(transpose(opti.lam_g()), opti.g()), opti.x());
     sp = H.sparsity();
-    // Function H = opti.advanced().get_solver().get_function("nlp_hess_l");
-    // sp = H.sparsity_out(0);
-
     for (int i = 0; i < sp.size1(); i++){
         for (int j = i; j < sp.size2(); j++){
             if (sp.has_nz(i,j)){
