@@ -65,7 +65,8 @@ while (file_found):
 for i in range(file_nb):
     fig = plt.figure()
 
-    plt.gca().add_patch(plt.Circle([1.5, 0.4], 0.3, color="red"))
+    if (i > 0):
+        plt.gca().add_patch(plt.Circle([1.5, 0.4], 0.3, color="red"))
     plt.plot(xx[i][0], xx[i][1], marker='o')
     plt.gca().set_aspect("equal")
     plt.savefig(figure_folder + "/trajectory_" + str(i) + ".pdf")
