@@ -18,6 +18,6 @@ import pathlib
 png_folder = str(pathlib.Path(__file__).parent.resolve()) # 'figures/animation'
 frame_format = '.png'
 gif_file = png_folder + "/animation.gif" #'figures/animation/animation.gif'
-delay = 400  # Delay between frames in milliseconds
+delay = 300  # Delay between frames in milliseconds
 
 create_gif(png_folder, gif_file, delay)
