@@ -158,7 +158,6 @@ void AdaptiveNLP::initTimeSteps(std::vector<int> nks, std::vector<double> tt){
     // hessian sparsity
     addCompleteHessianContribution(blocks_->g0_H_.sparsity_out(0), {0},
                                    free_time_, bookkeeper_.hess_nz_ind_g0_);
-
     //////////////////////
     // final constraint //
     //////////////////////
@@ -437,13 +436,15 @@ void AdaptiveNLP::changeIntervalDiscretization(int k, std::vector<int> nks,
         k_attach = bookkeeper_.next(k_attach);
     }
 
-    if (tt[tt.size()-1] >= bookkeeper_.time_from_ind_[k_attach].value()){
+    if (tt.size() > 0 && 
+            tt[tt.size()-1] >= bookkeeper_.time_from_ind_[k_attach].value()){
         throw illegalChangeToNLP("Invalid time-vector provided. The last "
                                  "element of the time vector should be lower "
                                  "than the time of the index to which the "
                                  "new discretization is attached");
     }
-    if (tt[0] <= bookkeeper_.time_from_ind_[k_init].value()){
+    if (tt.size() > 0 && 
+            tt[0] <= bookkeeper_.time_from_ind_[k_init].value()){
         throw illegalChangeToNLP("Invalid time-vector provided. The first "
                                  "element of the time vector should be higher "
                                  "than the time of the index at which the "
@@ -729,7 +730,7 @@ int AdaptiveNLP::solveNlp(std::map<std::string,
     assert (N_ > 0);
     if (bookkeeper_.remove_traces_old_constraints_ || 
             bookkeeper_.remove_traces_old_vars_){
-        throw new illegalCallToSolve();
+        throw illegalCallToSolve();
     }
     
     interface_->updateParameters(parameters);

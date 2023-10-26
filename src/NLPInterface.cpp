@@ -527,7 +527,7 @@ bool NLPInterface::eval_jac_g(
 				addContribution(values, blocks_->g0_J_.sparsity_out(0).nnz(),
 								bookkeeper_->jac_nz_ind_g0_);
 			} else {
-				arg3_[0] = &xk_[0]; arg2_[1] = &p_g0_[0];
+				arg2_[0] = &xk_[0]; arg2_[1] = &p_g0_[0];
 				get_x(x, 0);
 				blocks_->g0_J_(arg2_, res1_);
 				addContribution(values, blocks_->g0_J_.sparsity_out(0).nnz(),
@@ -1411,7 +1411,9 @@ void NLPInterface::resetClearingVectors(int nb_nz_cleared_g,
 }
 
 void NLPInterface::setInitialGuess(std::vector<double>& new_init_guess){
-	assert (new_init_guess.size() == nx_*(N_+1) + nu_*N_ + free_time_);
+	if (new_init_guess.size() != nx_*(N_+1) + nu_*N_ + free_time_){
+		throw illegalInitialGuessProvided();
+	}
 	std::copy(new_init_guess.begin(), new_init_guess.end(),
 			  init_guess_.begin());
 	initial_guess_available_ = true;	

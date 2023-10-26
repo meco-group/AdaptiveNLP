@@ -34,7 +34,6 @@ file_nb = 0
 file_found = True
 
 while (file_found):
-    print("file_nb = ", file_nb)
     try:
         with open(folder+"/controls_" + str(file_nb) + ".csv") as file:
             csv_reader = csv.reader(file)
@@ -51,10 +50,10 @@ while (file_found):
 
             uu.append(uu_to_add)
             tt.append(tt_to_add)
-            
+
         file_nb += 1
     except Exception as err:
-        print(err)
+        # print(err)
         file_found = False
 
     

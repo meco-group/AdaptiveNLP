@@ -12,6 +12,25 @@ LIST(APPEND COMMON_EXAMPLE_SOURCES
     plotter.hpp
 )
 
+#####################
+## MINIMAL EXAMPLE ##
+#####################
+
+add_executable(minimalExample
+    minimalExample/minimalExample.cpp
+    ${COMMON_EXAMPLE_SOURCES}
+)
+
+target_include_directories(minimalExample PRIVATE 
+    ${CMAKE_SOURCE_DIR}/examples
+)
+
+target_link_libraries(minimalExample
+    ${PROJECT_NAME}
+    ${CASADI_LIBRARIES}
+    ipopt
+)
+
 #############################################
 ## ADAPTIVE CORRIDOR EXAMPLE (MPC-EXAMPLE) ##
 #############################################

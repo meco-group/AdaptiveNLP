@@ -83,4 +83,14 @@ class illegalCallToSolve : public std::exception {
                           "clearStructuralZeros() first";
 };
 
+class illegalInitialGuessProvided : public std::exception {
+    public:
+        const char * what() const throw() {
+            return msg;
+        }
+    private:
+        const char* msg = "The size of the provided initial guess does not "
+                          "match the required size of nx*(N+1) + nu*N + (1).";
+};
+
 #endif

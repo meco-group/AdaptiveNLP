@@ -25,8 +25,10 @@ class AdaptiveNLP{
         :Nmax_(0), nx_(0), nu_(0), free_time_(false), blocks_(nullptr) {};
 
         // constructor
-        // blocks:                 building blocks to be used to assemble the 
+        // blocks:                  building blocks to be used to assemble the 
         //                          NLP
+        // T:                       horizon lenght. For free-time problems, it
+        //                          should be equal to 1.0
         // Nmax_:                   maximum number of time-steps to be 
         //                          accounted for in the NLP
         // max_nb_extra_instances_: maximum number of times the same extra 
@@ -69,7 +71,7 @@ class AdaptiveNLP{
 
         // Function adds the indicated extra constraints on the given indices.
         // If no constraint indices are provided, zero indices are used.
-        // If not parameters are provided, the default parameter (0) is used
+        // If no parameters are provided, the default parameter (0) is used
         // If a vector of length 1 is provided for the constraint_ind and the
         // parameters, this constraint index and parameter vector is used for
         // all indices to which to apply the constraint.
