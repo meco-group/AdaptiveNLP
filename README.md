@@ -56,16 +56,10 @@ The goal in this example is to land a moonlander as fast
 as possible on the surface of the moon without crashing into
 it. The lander is subject to a lunar gravitational pull and has one thruster to be used to slow down. This problem is solved using an adaptive gridding method to represent the bang-bang solution accurately on a discrete time-grid.
 
-The figure below shows the control inputs resulting from the grid refinements.
+The animations below show the control inputs and the constraint Jacobian sparsity structures resulting from the grid refinements.
 
-<!-- ![bang-bang-controls](examples/moonlanderExample/figures/controls.png) -->
-<p float="middle">
-<img src="examples/moonlanderExample/figures/controls.png" width="600">
-</p>
-
-The animation below shows the sparsity pattern of the constraint Jacobian of the different NLPs that are solved while refining the time-grid.
-<!-- ![Jacobian-animation](examples/moonlanderExample/figures/sparsities/animation_jac_adaptive.gif) -->
-<p float="middle">
+<p align="float">
+<img src="examples/moonlanderExample/figures/animation/animation.gif" width="600">
 <img src="examples/moonlanderExample/figures/sparsities/animation_jac_adaptive.gif" width="400">
 </p>
 
