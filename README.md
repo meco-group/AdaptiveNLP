@@ -45,9 +45,11 @@ In this example, a vehicle has to move through a warehouse environment. For some
 
 The top figure in the animation below shows the vehile moving through the free-space corridors while avoiding the people. It is also detecting and avoiding the obstacles. The middle figure shows the number of constraints present in the problem over the different MPC iterations. It shows the corridor constraints in green, the safety constraints in blue and the no-collision constraints in red. The bottom figure shows some computation times. The gray line is the CasADi Opti 1 case that solves the same NLP every iteration. The orange line is the CasADi opti 2 case that constructs a new opti instance every MPC iteration with only the constraints deemed necessary. The blue line is the AdaptiveNLP case that modifies the previous NLP to add or remove constraimts.
 <!-- ![MPC-animation](examples/adaptiveCorridorExample/figures/animation/animation.gif) -->
-<p align="center">
-<img src="examples/adaptiveCorridorExample/figures/animation/animation.gif" width="600">
+<p align="float">
+<img src="examples/adaptiveCorridorExample/figures/animation/animation.gif" width="500" />
+<img src="examples/adaptiveCorridorExample/figures/animation_controls/animation.gif" width="500" />
 </p>
+
 
 ### Example 2: Moonlander example
 The goal in this example is to land a moonlander as fast
@@ -57,13 +59,13 @@ it. The lander is subject to a lunar gravitational pull and has one thruster to 
 The figure below shows the control inputs resulting from the grid refinements.
 
 <!-- ![bang-bang-controls](examples/moonlanderExample/figures/controls.png) -->
-<p align="center">
+<p float="middle">
 <img src="examples/moonlanderExample/figures/controls.png" width="600">
 </p>
 
 The animation below shows the sparsity pattern of the constraint Jacobian of the different NLPs that are solved while refining the time-grid.
 <!-- ![Jacobian-animation](examples/moonlanderExample/figures/sparsities/animation_jac_adaptive.gif) -->
-<p align="center">
+<p float="middle">
 <img src="examples/moonlanderExample/figures/sparsities/animation_jac_adaptive.gif" width="400">
 </p>
 
