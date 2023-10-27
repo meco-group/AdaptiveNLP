@@ -2,6 +2,7 @@ include_directories(${CASADI_INCLUDEDIR})
 include_directories(${EIGEN_INC})
 include_directories(${IPOPT_INC})
 include_directories(${CMAKE_SOURCE_DIR})
+include_directories(${CMAKE_SOURCE_DIR}/include)
 
 set(COMMON_EXAMPLE_SOURCES)
 

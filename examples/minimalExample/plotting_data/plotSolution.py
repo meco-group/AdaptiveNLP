@@ -38,7 +38,7 @@ nu = 2
 
 while (file_found):
     try:
-        with open(folder+"\solution_" + str(file_nb) + ".csv") as file:
+        with open(folder+"/solution_" + str(file_nb) + ".csv") as file:
             csv_reader = csv.reader(file)
             header = next(csv_reader)
 
