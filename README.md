@@ -43,20 +43,20 @@ The executibles for every example are located in the folder `adaptivenlp/build/e
 ### Example 1: minimal example
 This minimal example demonstrates how changes can be made to an AdaptiveNLP instance. A simple vehicle performs a time-optimal point-to-point motion.
 <p align="float">
-<img src="readme-figures/minimalExample-trajectory_0.png" width="500" />
-<img src="readme-figures/minimalExample-controls_0.png" width="500" />
+<img src="docs/readme-figures/minimalExample-trajectory_0.png" width="500" />
+<img src="docs/readme-figures/minimalExample-controls_0.png" width="500" />
 </p>
 
 Next, an obstacle is introduced and a no-collision constraint is added.
 <p align="float">
-<img src="readme-figures/minimalExample-trajectory_1.png" width="500" />
-<img src="readme-figures/minimalExample-controls_1.png" width="500" />
+<img src="docs/readme-figures/minimalExample-trajectory_1.png" width="500" />
+<img src="docs/readme-figures/minimalExample-controls_1.png" width="500" />
 </p>
 
 However, the vehicle now collides with the obstacle because the no-collision constraint is only enforced on discrete points. Therefore, we locally refine the grid.
 <p align="float">
-<img src="readme-figures/minimalExample-trajectory_2.png" width="500" />
-<img src="readme-figures/minimalExample-controls_2.png" width="500" />
+<img src="docs/readme-figures/minimalExample-trajectory_2.png" width="500" />
+<img src="docs/readme-figures/minimalExample-controls_2.png" width="500" />
 </p>
 
 
@@ -65,8 +65,8 @@ In this example, a vehicle has to move through a warehouse environment. For some
 
 The top figure in the animation below shows the vehile moving through the free-space corridors while avoiding the people. It is also detecting and avoiding the obstacles. The middle figure shows the number of constraints present in the problem over the different MPC iterations. It shows the corridor constraints in green, the safety constraints in blue and the no-collision constraints in red. The bottom figure shows some computation times. The gray line is the CasADi Opti 1 case that solves the same NLP every iteration. The orange line is the CasADi opti 2 case that constructs a new opti instance every MPC iteration with only the constraints deemed necessary. The blue line is the AdaptiveNLP case that modifies the previous NLP to add or remove constraimts.
 <p align="float">
-<img src="readme-figures/animation-MPC.gif" width="500" />
-<img src="readme-figures/animation-MPC-controls.gif" width="500" />
+<img src="docs/readme-figures/animation-MPC.gif" width="500" />
+<img src="docs/readme-figures/animation-MPC-controls.gif" width="500" />
 </p>
 
 
@@ -78,8 +78,8 @@ it. The lander is subject to a lunar gravitational pull and has one thruster to 
 The animations below show the control inputs and the constraint Jacobian sparsity structures resulting from the grid refinements.
 
 <p align="float">
-<img src="readme-figures/animation-moonlander-controls.gif" width="600">
-<img src="readme-figures/animation-moonlander-jac-sparsity.gif" width="400">
+<img src="docs/readme-figures/animation-moonlander-controls.gif" width="600">
+<img src="docs/readme-figures/animation-moonlander-jac-sparsity.gif" width="400">
 </p>
 
 ## License
