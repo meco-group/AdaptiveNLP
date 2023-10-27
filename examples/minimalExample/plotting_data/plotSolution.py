@@ -63,24 +63,23 @@ while (file_found):
         file_found = False
 
 for i in range(file_nb):
-    fig = plt.figure()
+    fig = plt.figure(figsize=(7, 3.6))
 
     if (i > 0):
         plt.gca().add_patch(plt.Circle([1.5, 0.4], 0.3, color="red"))
     plt.plot(xx[i][0], xx[i][1], marker='o')
     plt.gca().set_aspect("equal")
+    plt.tight_layout()
     plt.savefig(figure_folder + "/trajectory_" + str(i) + ".pdf")
 
 
-    fig = plt.figure()
+    fig = plt.figure(figsize=(7, 3.6))
     for j in range(nu):
         plt.plot(tt[i][:-1], uu[i][j], marker='o')
     plt.xlabel("time [s]")
     plt.ylabel("control input")
-    # plt.yticks([0, 4, 8])
-
     plt.legend(["acceleration", "steering angle"])
-
+    plt.tight_layout()
     plt.savefig(figure_folder + "/controls_" + str(i) + ".pdf")
 
     plt.close()
