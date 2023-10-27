@@ -43,20 +43,20 @@ The executibles for every example are located in the folder `adaptivenlp/build/e
 ### Example 1: minimal example
 This minimal example demonstrates how changes can be made to an AdaptiveNLP instance. A simple vehicle performs a time-optimal point-to-point motion.
 <p align="float">
-<img src="readme-figures/minimalExample-trajectory_0.png" width="300" />
-<img src="readme-figures/minimalExample-controls_0.png" width="300" />
+<img src="readme-figures/minimalExample-trajectory_0.png" width="400" />
+<img src="readme-figures/minimalExample-controls_0.png" width="400" />
 </p>
 
 Next, an obstacle is introduced and a no-collision constraint is added.
 <p align="float">
-<img src="readme-figures/minimalExample-trajectory_1.png" width="300" />
-<img src="readme-figures/minimalExample-controls_1.png" width="300" />
+<img src="readme-figures/minimalExample-trajectory_1.png" width="400" />
+<img src="readme-figures/minimalExample-controls_1.png" width="400" />
 </p>
 
 However, the vehicle now collides with the obstacle because the no-collision constraint is only enforced on discrete points. Therefore, we locally refine the grid.
 <p align="float">
-<img src="readme-figures/minimalExample-trajectory_2.png" width="300" />
-<img src="readme-figures/minimalExample-controls_2.png" width="300" />
+<img src="readme-figures/minimalExample-trajectory_2.png" width="400" />
+<img src="readme-figures/minimalExample-controls_2.png" width="400" />
 </p>
 
 
