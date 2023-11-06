@@ -81,7 +81,3 @@ The animations below show the control inputs and the constraint Jacobian sparsit
 <img src="docs/readme-figures/animation-moonlander-controls.gif" width="600">
 <img src="docs/readme-figures/animation-moonlander-jac-sparsity.gif" width="400">
 </p>
-
-## License
-TODO
-
